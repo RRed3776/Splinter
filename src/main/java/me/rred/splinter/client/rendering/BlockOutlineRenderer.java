@@ -13,6 +13,11 @@ import org.lwjgl.opengl.GL32;
 
 import java.awt.*;
 
+/*
+ * Most of this class is adapted from
+ * https://github.com/LeSaRXD/BastionHelper
+ */
+
 public class BlockOutlineRenderer {
     private static final float LINE_WIDTH = 2.5f;
     private static final int DRAW_MODE = 1;

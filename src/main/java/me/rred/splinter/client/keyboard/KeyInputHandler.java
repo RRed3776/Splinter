@@ -62,7 +62,7 @@ public class KeyInputHandler {
             } else {
                 MinecraftClient client = MinecraftClient.getInstance();
                 if (client.player == null || client.world == null) return;
-                client.player.sendMessage( new LiteralText("can't select and edit in active mode. see sets GUI")
+                client.player.sendMessage( new LiteralText("cannot select and edit in active mode. see sets GUI")
                         .styled(s -> s.withColor(Formatting.RED)), false);
             }
         });

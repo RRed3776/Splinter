@@ -8,6 +8,11 @@ import me.rred.splinter.client.SplinterStateMachine;
 import me.rred.splinter.client.edit.gui.EditOutlines;
 import net.minecraft.client.util.math.MatrixStack;
 
+/*
+ * Most of this class is adapted from
+ * https://github.com/LeSaRXD/BastionHelper
+ */
+
 public class GlobalRenderer {
     public static final GlobalRenderer INSTANCE = new GlobalRenderer();
     private MatrixStack matrixStack = null;

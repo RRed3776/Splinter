@@ -52,7 +52,7 @@ public class SplinterStateMachine {
         if (client.world == null || client.player == null) return;
 
         if (state == State.ACTIVE) {
-            client.player.sendMessage( new LiteralText("can't edit in active mode. see sets GUI")
+            client.player.sendMessage( new LiteralText("cannot edit in active mode. see sets GUI")
                     .styled(s -> s.withColor(Formatting.RED)), false);
             return; // can't start running while making changes
         }

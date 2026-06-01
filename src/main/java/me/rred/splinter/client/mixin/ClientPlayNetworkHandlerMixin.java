@@ -1,6 +1,7 @@
 package me.rred.splinter.client.mixin;
 
 import me.rred.splinter.client.SplinterClient;
+import me.rred.splinter.client.SplinterUpdateChecker;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,5 +14,6 @@ public class ClientPlayNetworkHandlerMixin {
     @Inject(method = "onGameJoin", at = @At("TAIL"))
     private void onWorldJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
         SplinterClient.routeHandler.onWorldJoin();
+        SplinterUpdateChecker.check();
     }
 }
