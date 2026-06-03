@@ -4,14 +4,6 @@ public class SplinterColors {
     // raw Splinter palette
     public static int WHITE = 0xFFFFFFFF;
     public static int LIGHT_GRAY = 0xFF383840;
-    public static int WARM_TAN = 0xFFC4A898;
-    public static int DUSTY_MAUVE = 0xFF9A8A90;
-    public static int WARM_GRAY = 0xFF7A6E78;
-    public static int MUTED_PURPLE = 0xFF6B6575;
-    public static int SLATE_BLUE = 0xFF4A4F6A;
-    public static int DEEP_SLATE = 0xFF3D4466;
-    public static int DARK_NAVY = 0xFF2E3650;
-
     public static int CHARCOAL = 0xFF1C1F2A;
     public static int CHARCOAL_BLUE = 0xFF252838;
     public static int DEEP_NAVY = 0xFF2E3248;
@@ -34,6 +26,7 @@ public class SplinterColors {
     public static int MODAL_BG = CHARCOAL_BLUE;
     public static int MIDDLE_PANEL = LIGHT_GRAY;
     public static int TOP_PANEL = CHARCOAL_BLUE;
+    public static int CONTEXT_MENU = CHARCOAL;
 
 
     public static int alpha(int color, int alpha) {

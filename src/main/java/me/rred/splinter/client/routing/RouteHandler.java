@@ -47,15 +47,17 @@ public class RouteHandler {
         Trigger end = route.getEndTrigger();
 
         // check for decayed block break triggers, this is only run during inMap time
-        if (start instanceof BlockBreakTrigger bt && bt.getPos() != null
-                && !startFired && client.world.getBlockState(bt.getPos()).isAir()) {
-            invalidateRun(client, "starting");
-            return;
-        }
-        if (end instanceof BlockBreakTrigger bt && bt.getPos() != null
-                && startFired && !endFired && client.world.getBlockState(bt.getPos()).isAir()) {
-            invalidateRun(client, "ending");
-            return;
+        if (tick > 3) { // delay check in case bastion needs to re-generate
+            if (start instanceof BlockBreakTrigger bt && bt.getPos() != null
+                    && !startFired && client.world.getBlockState(bt.getPos()).isAir()) {
+                invalidateRun(client, "starting");
+                return;
+            }
+            if (end instanceof BlockBreakTrigger bt && bt.getPos() != null
+                    && startFired && !endFired && client.world.getBlockState(bt.getPos()).isAir()) {
+                invalidateRun(client, "ending");
+                return;
+            }
         }
 
         if (start instanceof MapTrigger mt) mt.mapTick(tick);

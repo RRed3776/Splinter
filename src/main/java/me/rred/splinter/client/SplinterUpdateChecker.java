@@ -20,15 +20,17 @@ import java.net.URL;
  */
 
 public class SplinterUpdateChecker {
-    private static final String UPDATE_URL = "https://github.com/RRed3776/Splinter/blob/main/update.json?raw=true";
-    private static final String CURRENT_VERSION = "1.0.1";
+    private static final String UPDATE_URL = "https://github.com/RRed3776/Splinter/blob/main/meta.json?raw=true";
+    private static final String CURRENT_VERSION = "1.0.2";
 
     public synchronized static void check() {
         try {
             JsonObject json = fetchJson(UPDATE_URL);
             String latest = json.get("latest").getAsString();
             if (!CURRENT_VERSION.equals(latest)) {
-                Text message = new LiteralText("[Splinter] Update available, Download ")
+                Text message = new LiteralText("[Splinter] Update available. Download ")
+                        .styled(s -> s
+                                .withColor(Formatting.YELLOW))
                         .append(new LiteralText("Here")
                                 .styled(s -> s
                                         .withColor(Formatting.AQUA)

@@ -82,7 +82,7 @@ public class SetsScreen extends Screen {
 
         // list starting X coordinate (after border) list1 starts at screenLeft
         partitions[0] = screenLeft;
-        partitionWidth = width / 7;
+        partitionWidth = width / 6;
         for (int i = 1; i < 5; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }

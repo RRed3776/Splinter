@@ -2,6 +2,7 @@ package me.rred.splinter.client.sets.gui;
 
 import me.rred.splinter.Splinter;
 import me.rred.splinter.client.sets.SplinterSet;
+import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.utils.TruncateText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -50,15 +51,17 @@ public class ContextMenu {
         if (!visible) return;
         int totalHeight = ITEM_HEIGHT * (options.size() + 1) + 1;
         hoveredOption = -1;
+        int disabledColor = SplinterColors.alpha(SplinterColors.MUTED_SLATE, 0xE0);
 
         // background
-        DrawableHelper.fill(matrixStack, x, y, x + WIDTH, y + totalHeight, 0xFF222222);
+        DrawableHelper.fill(matrixStack, x, y, x + WIDTH, y + totalHeight, SplinterColors.CONTEXT_MENU);
 
         // name header
-        textRenderer.drawWithShadow(matrixStack, TruncateText.truncate(set.getName(), WIDTH - 3, textRenderer), x + 3, y + 2, 0xAAAAAA);
+        int headerColor = SplinterColors.alpha(SplinterColors.SOFT_BLUE, 0xE0);
+        textRenderer.drawWithShadow(matrixStack, TruncateText.truncate(set.getName(), WIDTH - 3, textRenderer), x + 3, y + 2, headerColor);
 
-        // divider
-        DrawableHelper.fill(matrixStack, x, y + ITEM_HEIGHT, x + WIDTH, y + ITEM_HEIGHT + 1, 0x80555555);
+        // header divider
+        DrawableHelper.fill(matrixStack, x, y + ITEM_HEIGHT, x + WIDTH, y + ITEM_HEIGHT + 1, disabledColor);
 
         // options
         for (int i = 0; i < options.size(); i++) {
@@ -73,10 +76,10 @@ public class ContextMenu {
 
             if (isHovered) {
                 hoveredOption = i;
-                DrawableHelper.fill(matrixStack, x, optionY, x + WIDTH, optionY + ITEM_HEIGHT, 0x80555555);
+                DrawableHelper.fill(matrixStack, x, optionY, x + WIDTH, optionY + ITEM_HEIGHT, disabledColor);
             }
 
-            int textColor = !option.active ? 0x80888888 : option.color;
+            int textColor = !option.active ? disabledColor : option.color;
             textRenderer.drawWithShadow(matrixStack, option.label, x + 3, optionY + 2, textColor);
         }
     }

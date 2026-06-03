@@ -13,6 +13,7 @@ import static net.minecraft.client.gui.DrawableHelper.fill;
 
 public class ConfirmModal extends SplinterModal{
     private final Runnable onConfirm;
+    private int textY;
 
     public ConfirmModal(String message, Runnable onConfirm) {
         this.message = message;
@@ -20,27 +21,28 @@ public class ConfirmModal extends SplinterModal{
     }
 
     public void openModal(int screenWidth, int screenHeight) {
-        this.width = screenWidth / 5;
-        this.height = screenHeight / 6;
-        this.x = (screenWidth - width) / 2;
-        this.y = (screenHeight - height) / 2;
-        visible = true;
-        this.init();
-    }
-
-    protected void init() {
         MinecraftClient client = MinecraftClient.getInstance();
         TextRenderer textRenderer = client.textRenderer;
 
-        int buttonWidth = (int)(width * 0.6);
-        int buttonHeight = (textRenderer.fontHeight * 2);
-        int buttonX = x + (width - buttonWidth) / 2;
-        int buttonY = y + (int)(0.9 * height) - buttonHeight;
+        this.width = textRenderer.getWidth(message) + 20;
 
-        confirmButton = new SplinterButton(buttonX, buttonY, buttonWidth, buttonHeight,
+        int lineHeight = textRenderer.fontHeight * 2;
+        this.height = lineHeight * 3;
+
+        this.x = (screenWidth - width) / 2;
+        this.y = (screenHeight - height) / 2;
+        visible = true;
+
+        textY = this.y + (int)(lineHeight * 0.5);
+
+        int buttonWidth = (int)(width * 0.75);
+        int buttonX = x + (width - buttonWidth) / 2;
+        int buttonY = textY + lineHeight;
+
+        confirmButton = new SplinterButton(buttonX, buttonY, buttonWidth, lineHeight,
                 new LiteralText("CONFIRM"),
                 onConfirm
-                );
+        );
     }
 
     public void render(MatrixStack matrixStack, TextRenderer textRenderer,
@@ -54,7 +56,6 @@ public class ConfirmModal extends SplinterModal{
         fill(matrixStack, x + 1, y + 1, x + width - 1, y + height - 1, SplinterColors.MODAL_BG);
 
         int textX = x + (width / 2) - textRenderer.getWidth(message) / 2;
-        int textY = y + (int)(height * 0.2);
 
         textRenderer.drawWithShadow(matrixStack, message, textX, textY, SplinterColors.TEXT);
         if (confirmButton != null) {
