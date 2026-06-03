@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetsScreen extends Screen {
-    private SplinterSet activeSet;
 
     // main screen fields
     private int screenTop, screenBottom, screenLeft, screenRight;
@@ -65,7 +64,6 @@ public class SetsScreen extends Screen {
         buttons.clear();
         children.clear();
 
-        activeSet = SplinterClient.setManager.getActiveSet();
         List<SplinterSet> sets = SplinterClient.setManager.getAllSets();
         setA = SplinterClient.setManager.getDisplayedSetA();
         setB = SplinterClient.setManager.getDisplayedSetB();
@@ -100,33 +98,45 @@ public class SetsScreen extends Screen {
                                     // editing with changes
                                     client.player.sendMessage(new LiteralText("confirm or cancel changes in GUI")
                                             .styled(s -> s.withColor(Formatting.YELLOW)), false);
-                                } else if (SplinterClient.ssm.isEditing()) {
+                                }
+                                else if (SplinterClient.ssm.isEditing()) {
                                     // just editing, refresh edit session
                                     SplinterClient.setManager.setActiveSet(set);
                                     SplinterClient.ssm.refreshEditSession();
-                                } else if (SplinterClient.timer.isRunning()) {
+                                }
+                                else if (SplinterClient.timer.isRunning()) {
                                     // timer is running, invalidate the run then switch
                                     SplinterClient.routeHandler.invalidateRun();
                                     SplinterClient.setManager.setActiveSet(set);
-                                } else {
+                                }
+                                else {
                                     // swap set if it's not already active
                                     SplinterClient.setManager.setActiveSet(set);
                                 }
                             }
-                        } else if (button == 1) { // right click logic
-                            // RC + SHIFT or both are full
-                            if (hasShiftDown() || (setA != null && setB != null)) {
+                        }
+                        else if (button == 1) { // right click logic
+                            // RC + SHIFT displays, RC opens context menu
+                            if (hasShiftDown() && setA == null && setB != set) {
+                                SplinterClient.setManager.setDisplayedSetA(set);
+                                init();
+                            }
+                            else if (hasShiftDown() && setB == null && setA != set) {
+                                SplinterClient.setManager.setDisplayedSetB(set);
+                                init();
+                            }
+                            else {
                                 // context menu
                                 contextMenu.open(lastClickX, lastClickY, height, set, List.of(
                                         new ContextMenu.Option("Set as A", () -> {
                                             SplinterClient.setManager.setDisplayedSetA(set);
                                             init();
-                                        }, 0xFFFFFF,
+                                        }, SplinterColors.TEXT,
                                                 SplinterClient.setManager.getDisplayedSetA() != set),
                                         new ContextMenu.Option("Set as B", () -> {
                                             SplinterClient.setManager.setDisplayedSetB(set);
                                             init();
-                                        }, 0xFFFFFF,
+                                        }, SplinterColors.TEXT,
                                                 SplinterClient.setManager.getDisplayedSetB() != set),
                                         new ContextMenu.Option("Rename", () -> {
                                             activeModal = new InputModal("Rename Set", () -> {
@@ -141,21 +151,21 @@ public class SetsScreen extends Screen {
                                             String setName = set.getName();
                                             activeModal.setSubmessage(setName);
                                             activeModal.openModal(width, height);
-                                        }, 0xFFFFFF, true),
+                                        }, SplinterColors.TEXT, true),
                                         new ContextMenu.Option("Clear", () -> {
                                             activeModal = new ConfirmModal("Clear \"" + set.getName() + "\"?", () -> {
-                                                activeSet.clearSet();
+                                                set.clearSet();
                                                 activeModal = null;
                                                 init();
                                             });
                                             activeModal.openModal(width, height);
-                                        }, 0xFFFFFF, !set.isEmpty()),
+                                        }, SplinterColors.TEXT, !set.isEmpty()),
                                         new ContextMenu.Option("Duplicate", () -> {
                                             SplinterSet duplicate = new SplinterSet("Copy of " + set.getName(), false, new Route(set.getRoute()));
                                             SplinterClient.setManager.addSet(duplicate);
                                             init();
                                             },
-                                                0xFFFFFF,
+                                                SplinterColors.TEXT,
                                                 true),
                                         new ContextMenu.Option("Delete", () -> {
                                             activeModal = new ConfirmModal("Delete \"" + set.getName() + "\"?", () -> {
@@ -166,12 +176,6 @@ public class SetsScreen extends Screen {
                                             activeModal.openModal(width, height);
                                         }, 0xFF5555, !set.isGeneral())
                                 ));
-                            } else if (setA == null && setB != set) {
-                                SplinterClient.setManager.setDisplayedSetA(set);
-                                init();
-                            } else if (setB == null && setA != set) {
-                                SplinterClient.setManager.setDisplayedSetB(set);
-                                init();
                             }
                         }
                     }
@@ -247,7 +251,7 @@ public class SetsScreen extends Screen {
         int hintGap = 10;
         // context menu hint
         String menuHintText1 = "Shift + Right Mouse";
-        String menuHintText2 = "to open set context menu";
+        String menuHintText2 = "to quick display a set";
 
         textRenderer.drawWithShadow(matrixStack, menuHintText1, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 5, textColor);
         textRenderer.drawWithShadow(matrixStack, menuHintText2, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 4, textColor);// top panel (tabs)
@@ -443,7 +447,8 @@ public class SetsScreen extends Screen {
             }
             String sdText = String.format("%.2fs", setAStats[2] / 1000.0);
             textRenderer.drawWithShadow(matrixStack, sdText, stats2X + padding, rowTop + (2 * rowHeight), textColor);
-        } else {
+        }
+        else {
             for (int i = 0; i < 3; i++) {
                 textRenderer.drawWithShadow(matrixStack, "-", stats2X + padding, rowTop + (i * rowHeight), textColor);
             }
@@ -457,7 +462,8 @@ public class SetsScreen extends Screen {
             }
             String sdText = String.format("%.2fs", setBStats[2] / 1000.0);
             textRenderer.drawWithShadow(matrixStack, sdText, stats3X + padding, rowTop + (2 * rowHeight), textColor);
-        } else {
+        }
+        else {
             for (int i = 0; i < 3; i++) {
                 textRenderer.drawWithShadow(matrixStack, "-", stats3X + padding, rowTop + (i * rowHeight), textColor);
             }
@@ -471,7 +477,8 @@ public class SetsScreen extends Screen {
                 int diffColor = diff > 0 ? 0xFF5555 : 0x55FF55; // red if A is slower, green if faster
                 textRenderer.drawWithShadow(matrixStack, diffText, stats4X + padding, rowTop + (i * rowHeight), diffColor);
             }
-        } else {
+        }
+        else {
             for (int i = 0; i < 2; i++) {
                 textRenderer.drawWithShadow(matrixStack, "-", stats4X + padding, rowTop + (i * rowHeight), textColor);
             }
@@ -484,7 +491,8 @@ public class SetsScreen extends Screen {
         assert(client != null);
         if (client.currentScreen instanceof SetsScreen) {
             client.openScreen(null);
-        } else {
+        }
+        else {
             client.openScreen(new SetsScreen());
         }
     }
