@@ -20,7 +20,7 @@ import java.net.URL;
  */
 
 public class SplinterUpdateChecker {
-    private static final String UPDATE_URL = "https://github.com/RRed3776/Splinter/blob/main/meta.json?raw=true";
+    private static final String UPDATE_URL = "https://github.com/RRed3776/Splinter/blob/meta/meta.json?raw=true";
     private static final String CURRENT_VERSION = "1.0.3";
 
     public synchronized static void check() {
