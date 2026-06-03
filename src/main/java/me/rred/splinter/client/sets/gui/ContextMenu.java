@@ -104,9 +104,7 @@ public class ContextMenu {
 
     private void shiftMenu(int screenBottom) {
         int totalHeight = ITEM_HEIGHT * (options.size() + 1) + 1;
-        Splinter.LOGGER.info("shifting menu...");
         if (y + totalHeight < screenBottom) return;
-        Splinter.LOGGER.info("menu shifted!");
         this.y = y - totalHeight;
     }
 
