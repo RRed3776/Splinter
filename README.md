@@ -32,7 +32,6 @@ Fabric API 0.18.0 build 387: https://modrinth.com/mod/fabric-api/versions?g=1.16
 5. Run the route - the timer starts and stops based on the selected triggers
 
 ## Known Issues
-- Overlays (rename) text bleeding behind confirm button, overlay may become unresponsive or broken when pressing other buttons. press ESC and re-open to fix
 - Route data not persistent between sessions (planned for 1.1.0)
 
 ## TODO:
