@@ -33,7 +33,11 @@ public class RouteHandler {
         if (start instanceof PositionTrigger pt) pt.tick();
 
         // only tick after start fires
-        if (startFired && end instanceof PositionTrigger pt) pt.tick();
+        if (startFired && end instanceof PositionTrigger pt2) {
+            if (SplinterClient.timer.fetchElapsedTime() < 1000) return; // delay tick for a second
+            pt2.tick();
+        }
+
         checkTriggers(route);
     }
 
@@ -47,7 +51,7 @@ public class RouteHandler {
         Trigger end = route.getEndTrigger();
 
         // check for decayed block break triggers, this is only run during inMap time
-        if (tick > 3) { // delay check in case bastion needs to re-generate
+        if (tick > 20) { // delay check by a second in case bastion needs to re-generate
             if (start instanceof BlockBreakTrigger bt && bt.getPos() != null
                     && !startFired && client.world.getBlockState(bt.getPos()).isAir()) {
                 invalidateRun(client, "starting");
