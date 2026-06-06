@@ -33,9 +33,13 @@ Fabric API 0.18.0 build 387: https://modrinth.com/mod/fabric-api/versions?g=1.16
 
 ## Known Issues
 - Route data not persistent between sessions (planned for 1.1.0)
+- Block Break Triggers breaking on map start
+- Position and Block Break Triggers not able to be placed in the same pos
 
 ## TODO:
 - Persistent Data
+- Exporting data to CSV file
+- Replace trial numbers with trial count
 - Unlimited active sets / Intermediary splits (splits between START and END)
 - Set moving / rework general (drag n drop)
 - Piglin Stats (Pig count, Barter Splits, Trade start/end)
