@@ -20,13 +20,14 @@ import java.net.URL;
  */
 
 public class SplinterUpdateChecker {
-    private static final String UPDATE_URL = "https://github.com/RRed3776/Splinter/blob/meta/meta.json?raw=true";
+    private static final String UPDATE_URL = "https://raw.githubusercontent.com/RRed3776/Splinter/refs/heads/meta/meta.json";
     private static final String CURRENT_VERSION = "1.0.3";
 
     public synchronized static void check() {
         try {
             JsonObject json = fetchJson(UPDATE_URL);
             String latest = json.get("latest").getAsString();
+
             if (!CURRENT_VERSION.equals(latest)) {
                 Text message = new LiteralText("[Splinter] Update available. Download ")
                         .styled(s -> s
@@ -39,10 +40,12 @@ public class SplinterUpdateChecker {
                                                 .withBold(true)
                                 ));
                 MinecraftClient.getInstance().player.sendMessage(message, false);
+            } else {
+                Splinter.LOGGER.info("splinter versions match");
             }
         } catch (Exception e) {
+            Splinter.LOGGER.error(e);
             Splinter.LOGGER.error("Failed to grab Splinter update meta");
-            return;
         }
     }
 

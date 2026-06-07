@@ -81,10 +81,12 @@ public class SetsScreen extends Screen {
         // list starting X coordinate (after border) list1 starts at screenLeft
         partitions[0] = screenLeft;
         partitionWidth = width / 6;
-        for (int i = 1; i < 5; i++) {
+        // sets list
+        partitions[1] = partitions[0] + partitionWidth + borderWidth;
+        // times lists
+        for (int i = 2; i <= 3; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
-        // partitions[1] = start of sets list, 2 = A timesList, 3 = B timesList
 
         // panels for middle section
         int listHeight = listBottom - listTop;

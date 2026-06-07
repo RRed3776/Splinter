@@ -54,11 +54,9 @@ public class TimesListPanel extends ListPanel {
                 DrawableHelper.fill(matrixStack, x, itemY + LINE_HEIGHT, x + width, itemY + LINE_HEIGHT + 1, 0x80666666);
 
                 int textY = itemY + (LINE_HEIGHT - textRenderer.fontHeight + 1) / 2 + 1;
-                String number = (i + 1) + ".";
                 String timeText = TimerFormatter.format(times.get(i));
 
-                textRenderer.drawWithShadow(matrixStack, number, x + 3, textY, 0xFFFFFF);
-                textRenderer.drawWithShadow(matrixStack, timeText, x + 20, textY, 0xFFFFFF);
+                textRenderer.drawWithShadow(matrixStack, timeText, x + 3, textY, 0xFFFFFF);
             }
         }
     }

@@ -25,11 +25,15 @@ public class SplinterSet {
         if (idx < 0 || idx > times.size() - 1) {
             return;
         }
-        times.remove((int) idx);
+        times.remove(idx);
     }
 
     public List<Long> getTimes() {
         return times;
+    }
+
+    public int getTimesSize() {
+        return times.size();
     }
 
     public long getAverage() {
