@@ -13,6 +13,8 @@ import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.TimerFormatter;
 import me.rred.splinter.client.utils.TruncateText;
+import me.rred.splinter.export.CsvExport;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -24,6 +26,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -202,6 +208,23 @@ public class SetsScreen extends Screen {
                         init();
                     });
                     activeModal.openModal(width, height);
+                }
+        ));
+
+        // test button for exporting
+        addButton(new SplinterButton(screenRight - partitionWidth, screenTop, partitionWidth, createButtonHeight,
+                new LiteralText("EXPORT"),
+                () -> {
+                    MinecraftClient client = MinecraftClient.getInstance();
+                    // https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
+                    Path out = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+                    String outString = out.toString();
+                    try {
+                        Files.createDirectories(out);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                    Splinter.LOGGER.info("out: {}", outString);
                 }
         ));
 
