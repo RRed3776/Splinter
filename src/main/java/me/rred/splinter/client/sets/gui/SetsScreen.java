@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,8 @@ public class SetsScreen extends Screen {
     private SplinterSet setA;
     private SplinterSet setB;
     private static final int textColor = 0xFFFFFF;
-
+    private boolean isExporting = false;
+    private List<SplinterSet> exportSets = new ArrayList<>();
 
     private static final Identifier WARNING_ICON = new Identifier("splinter", "textures/areyousuresmallest.png");
 
@@ -210,21 +212,43 @@ public class SetsScreen extends Screen {
                     activeModal.openModal(width, height);
                 }
         ));
+        // test button to enter export mode
+        addButton(new SplinterButton(screenRight - partitionWidth, screenTop, partitionWidth / 2, createButtonHeight,
+                new LiteralText("SELECT EXPORTS"),
+                () -> {
+                    isExporting = true;
+                }
+        ));
 
         // test button for exporting
-        addButton(new SplinterButton(screenRight - partitionWidth, screenTop, partitionWidth, createButtonHeight,
+        addButton(new SplinterButton(screenRight - partitionWidth / 2, screenTop, partitionWidth / 2, createButtonHeight,
                 new LiteralText("EXPORT"),
                 () -> {
-                    MinecraftClient client = MinecraftClient.getInstance();
                     // https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-                    Path out = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+
+                    String fileName = "test.csv";
+                    Path out = exportPath.resolve(fileName);
                     String outString = out.toString();
                     try {
-                        Files.createDirectories(out);
+                        Files.createDirectories(exportPath);
                     } catch (IOException e) {
-                        throw new UncheckedIOException(e);
+                        Splinter.LOGGER.error(e);
                     }
+
+                    if (isExporting && !exportSets.isEmpty()) {
+                        // export the selected sets
+                        CsvExport.export(exportSets, out);
+                    } else {
+                        isExporting = false;
+                    }
+
                     Splinter.LOGGER.info("out: {}", outString);
+                    // for now export the active set's times.
+                    List<SplinterSet> testSets = new ArrayList<>();
+                    testSets.add(SplinterClient.setManager.getActiveSet());
+
+                    CsvExport.export(testSets, out);
                 }
         ));
 

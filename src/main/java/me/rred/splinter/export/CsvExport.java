@@ -1,6 +1,9 @@
 package me.rred.splinter.export;
 
+import com.ibm.icu.impl.number.range.StandardPluralRanges;
+import me.rred.splinter.Splinter;
 import me.rred.splinter.client.sets.SplinterSet;
+import me.rred.splinter.client.utils.TimerFormatter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,30 +22,22 @@ public class CsvExport {
     private static final String DELIMITER = ",";
 
     public static void export(List<SplinterSet> sets, Path out) {
-        List<String> headers = new ArrayList<>();
-        headers.add("Name");
-        headers.add("Time");
+        String headers = "Name,Time"; // for now just hardcode this since there's only one type of file to export
 
-        try (BufferedWriter bw = Files.newBufferedWriter(out, StandardOpenOption.APPEND)){
+        try (BufferedWriter bw = Files.newBufferedWriter(out, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)){
             // write header, create if not made already
-            bw.write(writeHeader(headers));
+            bw.write(headers);
             bw.newLine();
             // write rows
             for (SplinterSet set : sets) {
                 for (Long time : set.getTimes()) {
-                    bw.write(set.getName() + DELIMITER + time.toString());
+                    String timeEntry = TimerFormatter.format(time);
+                    bw.write(set.getName() + DELIMITER + timeEntry);
                     bw.newLine();
                 }
             }
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            Splinter.LOGGER.error(e);
         }
     }
-
-    private static String writeHeader(List<String> headers) {
-        StringBuilder result = new StringBuilder();
-        headers.stream().forEach(item -> result.append(item).append(DELIMITER));
-        return result.toString();
-    }
-
 }
