@@ -40,13 +40,13 @@ public class SetsScreen extends Screen {
     private int screenTop, screenBottom, screenLeft, screenRight;
     private int listTop, listBottom;
     private int headerTextY;
-    private int tabHeight = 20;
+    private final int tabHeight = 20;
     private int offset = 25;
     private int padding = 5;
     private int headerButtonLen;
     private SplinterSet setA;
     private SplinterSet setB;
-    private static final int textColor = 0xFFFFFF;
+    private static final int textColor = SplinterColors.TEXT;
     private boolean isExporting = false;
     private List<SplinterSet> exportSets = new ArrayList<>();
 
@@ -57,8 +57,8 @@ public class SetsScreen extends Screen {
     private TimesListPanel timesListPanelA;
     private TimesListPanel timesListPanelB;
     private ContextMenu contextMenu = new ContextMenu();
-    private int borderWidth = 1;
-    private int[] partitions = new int[5];
+    private final int borderWidth = 1;
+    private final int[] partitions = new int[5];
     private int partitionWidth;
     private int lastClickX, lastClickY;
     private SplinterModal activeModal;
@@ -92,7 +92,7 @@ public class SetsScreen extends Screen {
         // sets list
         partitions[1] = partitions[0] + partitionWidth + borderWidth;
         // times lists
-        for (int i = 2; i <= 3; i++) {
+        for (int i = 1; i <= 3; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
 
@@ -184,7 +184,7 @@ public class SetsScreen extends Screen {
                                                 init();
                                             });
                                             activeModal.openModal(width, height);
-                                        }, 0xFF5555, !set.isGeneral())
+                                        }, 0xFF5555, !(sets.size() == 1))
                                 ));
                             }
                         }
@@ -194,10 +194,11 @@ public class SetsScreen extends Screen {
         timesListPanelA = new TimesListPanel(partitions[1], listTop, partitionWidth, listHeight, setA);
         timesListPanelB = new TimesListPanel(partitions[2], listTop, partitionWidth, listHeight, setB);
 
-        // set creation button
-        int createButtonHeight = 20;
+        // initialize buttons
 
-        addButton(new SplinterButton(screenLeft, screenTop, partitionWidth, createButtonHeight,
+        int buttonHeight = 20;
+
+        addButton(new SplinterButton(screenLeft, screenTop, partitionWidth, buttonHeight,
                 new LiteralText("NEW SET"),
                 () -> {
                     activeModal = new InputModal("Choose Set Name", () -> {
@@ -212,45 +213,50 @@ public class SetsScreen extends Screen {
                     activeModal.openModal(width, height);
                 }
         ));
-        // test button to enter export mode
-        addButton(new SplinterButton(screenRight - partitionWidth, screenTop, partitionWidth / 2, createButtonHeight,
-                new LiteralText("SELECT EXPORTS"),
+
+        int exportButtonHeight = 18;
+
+        // open export screen
+        addButton(new SplinterButton(partitions[3] + 5, screenBottom - exportButtonHeight - 5, partitionWidth, exportButtonHeight,
+                new LiteralText("EXPORT DATA"),
                 () -> {
-                    isExporting = true;
+                    SetsScreen.toggle();
+                    ExportScreen.toggle();
+                    Splinter.LOGGER.info("entering export mode");
                 }
         ));
 
-        // test button for exporting
-        addButton(new SplinterButton(screenRight - partitionWidth / 2, screenTop, partitionWidth / 2, createButtonHeight,
-                new LiteralText("EXPORT"),
-                () -> {
-                    // https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
-
-                    String fileName = "test.csv";
-                    Path out = exportPath.resolve(fileName);
-                    String outString = out.toString();
-                    try {
-                        Files.createDirectories(exportPath);
-                    } catch (IOException e) {
-                        Splinter.LOGGER.error(e);
-                    }
-
-                    if (isExporting && !exportSets.isEmpty()) {
-                        // export the selected sets
-                        CsvExport.export(exportSets, out);
-                    } else {
-                        isExporting = false;
-                    }
-
-                    Splinter.LOGGER.info("out: {}", outString);
-                    // for now export the active set's times.
-                    List<SplinterSet> testSets = new ArrayList<>();
-                    testSets.add(SplinterClient.setManager.getActiveSet());
-
-                    CsvExport.export(testSets, out);
-                }
-        ));
+//        // test button for exporting
+//        addButton(new SplinterButton(screenRight - partitionWidth / 2, screenTop, partitionWidth / 2, createButtonHeight,
+//                new LiteralText("EXPORT"),
+//                () -> {
+//                    // https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
+//                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+//
+//                    String fileName = "test.csv";
+//                    Path out = exportPath.resolve(fileName);
+//                    String outString = out.toString();
+//                    try {
+//                        Files.createDirectories(exportPath);
+//                    } catch (IOException e) {
+//                        Splinter.LOGGER.error(e);
+//                    }
+//
+//                    if (isExporting && !exportSets.isEmpty()) {
+//                        // export the selected sets
+//                        CsvExport.export(exportSets, out);
+//                    } else {
+//                        isExporting = false;
+//                    }
+//
+//                    Splinter.LOGGER.info("out: {}", outString);
+//                    // for now export the active set's times.
+//                    List<SplinterSet> testSets = new ArrayList<>();
+//                    testSets.add(SplinterClient.setManager.getActiveSet());
+//
+//                    CsvExport.export(testSets, out);
+//                }
+//        ));
 
         if (activeModal != null) activeModal.openModal(width, height);
 
@@ -298,26 +304,28 @@ public class SetsScreen extends Screen {
         int textHeight = textRenderer.fontHeight;
         int vertGap = 3;
         int hintGap = 10;
-        // context menu hint
-        String menuHintText1 = "Shift + Right Mouse";
-        String menuHintText2 = "to quick display a set";
 
-        textRenderer.drawWithShadow(matrixStack, menuHintText1, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 5, textColor);
-        textRenderer.drawWithShadow(matrixStack, menuHintText2, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 4, textColor);// top panel (tabs)
-
-        // edit mode hint
-        String keybind = KeyInputHandler.TOGGLE_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
-        String editMessage1 = "enter idle mode by";
-        String editMessage2 = "pressing the \"■\" symbol";
-        String editMessage3 = "& enter edit mode with " + "\"" + keybind + "\"";
-
-        textRenderer.drawWithShadow(matrixStack, editMessage1, partitions[3] + 5, screenBottom - (vertGap + textHeight)* 3, textColor);
-        textRenderer.drawWithShadow(matrixStack, editMessage2, partitions[3] + 5, screenBottom - (vertGap + textHeight) * 2, textColor);
-        textRenderer.drawWithShadow(matrixStack, editMessage3, partitions[3] + 5, screenBottom - (vertGap + textHeight), textColor);// top panel (tabs)
+        // put this into a hint button later
+//        // context menu hint
+//        String menuHintText1 = "Shift + Right Mouse";
+//        String menuHintText2 = "to quick display a set";
+//
+//        textRenderer.drawWithShadow(matrixStack, menuHintText1, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 5, textColor);
+//        textRenderer.drawWithShadow(matrixStack, menuHintText2, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 4, textColor);// top panel (tabs)
+//
+//        // edit mode hint
+//        String keybind = KeyInputHandler.TOGGLE_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
+//        String editMessage1 = "enter idle mode by";
+//        String editMessage2 = "pressing the \"■\" symbol";
+//        String editMessage3 = "& enter edit mode with " + "\"" + keybind + "\"";
+//
+//        textRenderer.drawWithShadow(matrixStack, editMessage1, partitions[3] + 5, screenBottom - (vertGap + textHeight)* 3, textColor);
+//        textRenderer.drawWithShadow(matrixStack, editMessage2, partitions[3] + 5, screenBottom - (vertGap + textHeight) * 2, textColor);
+//        textRenderer.drawWithShadow(matrixStack, editMessage3, partitions[3] + 5, screenBottom - (vertGap + textHeight), textColor);// top panel (tabs)
 
         // outer border, screen is inside the border
-        // top
         int outerBorderColor = SplinterColors.BORDER;
+        // top
         fill(matrixStack, screenLeft - borderWidth, screenTop - borderWidth, screenRight + borderWidth, screenTop, outerBorderColor);
         // bottom
         fill(matrixStack, screenLeft - borderWidth, screenBottom, screenRight + borderWidth, screenBottom + borderWidth, outerBorderColor);

@@ -34,9 +34,9 @@ public class SetManager {
     }
 
     public void deleteSet(SplinterSet set) {
-        if (set.isGeneral()) return;
+        if (sets.size() == 1) return;
         sets.remove(set);
-        if (activeSet == set) activeSet = sets.get(0); // fall back to general
+        if (activeSet == set) activeSet = sets.get(0); // fall back first set
         if (displayedSetA == set) displayedSetA = null;
         if (displayedSetB == set) displayedSetB = null;
     }
