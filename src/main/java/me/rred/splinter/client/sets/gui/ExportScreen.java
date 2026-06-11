@@ -3,10 +3,13 @@ package me.rred.splinter.client.sets.gui;
 import me.rred.splinter.Splinter;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
+import me.rred.splinter.client.routing.Route;
 import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
+import me.rred.splinter.client.widgets.modals.InputModal;
+import me.rred.splinter.client.widgets.modals.PopUpMessage;
 import me.rred.splinter.export.CsvExport;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
@@ -36,6 +39,8 @@ public class ExportScreen extends Screen {
     private final int tabHeight = 20;
     private ExportSetsListPanel setsListPanel;
     private SplinterButton exportButton;
+    private InputModal exportModal;
+    private PopUpMessage sameNamePopUp;
 
     private List<SplinterSet> exportSets = new ArrayList<>();
 
@@ -45,6 +50,9 @@ public class ExportScreen extends Screen {
 
     @Override
     protected void init() {
+        buttons.clear();
+        children.clear();
+
         int offset = 25;
         screenTop = offset;
         screenBottom = height - (int)(offset * 1.8);
@@ -64,6 +72,8 @@ public class ExportScreen extends Screen {
         for (int i = 1; i <= 2; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
+
+        sameNamePopUp = new PopUpMessage(0, 0, "Name Already Exists!");
 
         int buttonHeight = 18;
         int buttonWidth = partitionWidth / 2;
@@ -140,28 +150,63 @@ public class ExportScreen extends Screen {
         addButton(exportButton = new SplinterButton(exportX, screenBottom - buttonHeight - 5, buttonWidth, buttonHeight,
                 new LiteralText("EXPORT"),
                 () -> {
-                    // export given exportSets
-                    Splinter.LOGGER.info("exporting");
+                    exportModal = new InputModal("Name File", () -> { // confirm button on input
+                        String name = exportModal.getTextInput();
+                        if (name == null || name.isEmpty()) return;
+                        if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                            sameNamePopUp.active = true;
+                        } else {
+                            // export given exportSets
+                            Splinter.LOGGER.info("exporting");
 
-                    //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+                            //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
+                            Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
 
-                    String fileName = "test.csv";
-                    Path out = exportPath.resolve(fileName);
-                    String outString = out.toString();
-                    Splinter.LOGGER.info("out: {}", outString);
+                            String fileName = "test.csv";
+                            Path out = exportPath.resolve(fileName);
+                            String outString = out.toString();
+                            Splinter.LOGGER.info("out: {}", outString);
 
-                    try {
-                        Files.createDirectories(exportPath);
-                    } catch (IOException e) {
-                        Splinter.LOGGER.error(e);
-                    }
+                            try {
+                                Files.createDirectories(exportPath);
+                            } catch (IOException e) {
+                                Splinter.LOGGER.error(e);
+                            }
 
-                    CsvExport.export(exportSets, out);
+                            CsvExport.export(exportSets, out);
 
-                    // clear the exportSets
-                    exportSets.clear();
-                    setsListPanel.updateExportSets(exportSets);
+                            // clear the exportSets
+                            exportSets.clear();
+                            setsListPanel.updateExportSets(exportSets);
+
+                            SplinterClient.setManager.createSet(name);
+                            exportModal.closeGuard = false;
+                            exportModal = null;
+                            init();
+                        }
+                    });
+//                    // export given exportSets
+//                    Splinter.LOGGER.info("exporting");
+//
+//                    //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
+//                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+//
+//                    String fileName = "test.csv";
+//                    Path out = exportPath.resolve(fileName);
+//                    String outString = out.toString();
+//                    Splinter.LOGGER.info("out: {}", outString);
+//
+//                    try {
+//                        Files.createDirectories(exportPath);
+//                    } catch (IOException e) {
+//                        Splinter.LOGGER.error(e);
+//                    }
+//
+//                    CsvExport.export(exportSets, out);
+//
+//                    // clear the exportSets
+//                    exportSets.clear();
+//                    setsListPanel.updateExportSets(exportSets);
                 }
         ));
     }

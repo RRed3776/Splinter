@@ -8,6 +8,7 @@ import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
 import me.rred.splinter.client.widgets.modals.ConfirmModal;
 import me.rred.splinter.client.widgets.modals.InputModal;
+import me.rred.splinter.client.widgets.modals.PopUpMessage;
 import me.rred.splinter.client.widgets.modals.SplinterModal;
 import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.ScissorUtil;
@@ -62,6 +63,7 @@ public class SetsScreen extends Screen {
     private int partitionWidth;
     private int lastClickX, lastClickY;
     private SplinterModal activeModal;
+    private PopUpMessage sameNamePopUp;
 
     public SetsScreen() {
         super(new LiteralText("Splinter Sets"));
@@ -95,6 +97,8 @@ public class SetsScreen extends Screen {
         for (int i = 1; i <= 3; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
+
+        sameNamePopUp = new PopUpMessage(0, 0, "Name Already Exists!");
 
         // panels for middle section
         int listHeight = listBottom - listTop;
@@ -155,12 +159,14 @@ public class SetsScreen extends Screen {
                                                     if (name == null || name.isEmpty()) return;
                                                     // for now, same names will return. later send a message
                                                     if (sets.contains(new SplinterSet(name, false, new Route()))) {
-                                                        return;
+                                                        sameNamePopUp.active = true;
+                                                    } else {
+                                                        set.renameSet(name);
+                                                        activeModal.closeGuard = false;
+                                                        activeModal = null;
+                                                        init();
                                                     }
-                                                    set.renameSet(name);
                                                 }
-                                                activeModal = null;
-                                                init();
                                             });
                                             String setName = set.getName();
                                             activeModal.setSubmessage(setName);
@@ -210,12 +216,14 @@ public class SetsScreen extends Screen {
                             String name = im.getTextInput();
                             if (name == null || name.isEmpty()) return;
                             if (sets.contains(new SplinterSet(name, false, new Route()))) {
-                                return;
+                                sameNamePopUp.active = true;
+                            } else {
+                                SplinterClient.setManager.createSet(name);
+                                activeModal.closeGuard = false;
+                                activeModal = null;
+                                init();
                             }
-                            SplinterClient.setManager.createSet(name);
                         }
-                        activeModal = null;
-                        init();
                     });
                     activeModal.openModal(width, height);
                 }
@@ -278,6 +286,9 @@ public class SetsScreen extends Screen {
 
         // GUI title text
         drawCenteredText(matrixStack, textRenderer, title, width / 2, 10, textColor);
+
+        // render PopUps
+        sameNamePopUp.render(matrixStack, textRenderer);
 
         // top panel (create button, headers)
         int topPanelColor = SplinterColors.alpha(SplinterColors.TOP_PANEL, 0x95);;

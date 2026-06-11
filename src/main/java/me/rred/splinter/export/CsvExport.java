@@ -34,7 +34,7 @@ public class CsvExport {
                 String nameEntry = set.getName().replace(" ", "_");
 
                 for (Long time : set.getTimes()) {
-                    String timeEntry = TimerFormatter.secondsFormat(time);
+                    String timeEntry = TimerFormatter.formatSeconds(time);
                     bw.write(nameEntry + DELIMITER + timeEntry);
                     bw.newLine();
                 }

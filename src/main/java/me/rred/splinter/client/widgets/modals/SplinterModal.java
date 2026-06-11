@@ -9,6 +9,7 @@ public abstract class SplinterModal {
     protected int x, y, width, height;
     protected SplinterButton confirmButton;
     protected boolean visible = false;
+    public boolean closeGuard = true;
     protected String message;
     protected String subMessage = null;
 

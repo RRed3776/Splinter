@@ -42,7 +42,7 @@ public class InputModal extends SplinterModal{
         int subMessageWidth = textRenderer.getWidth(subMessage) + 20;
         if (width < subMessageWidth) {
             this.width = subMessageWidth;
-        } // extend if the submessage is longer than the normal width
+        } // extend if the submessage is longer thn the normal width
 
         // make room for sub message if necessary
         int lineHeight = textRenderer.fontHeight * 2;
@@ -117,6 +117,7 @@ public class InputModal extends SplinterModal{
     public boolean handleClick(double mouseX, double mouseY, int button) {
         if (input != null) input.mouseClicked(mouseX, mouseY, button);
         if (confirmButton != null && confirmButton.mouseClicked(mouseX, mouseY, button)) {
+            if (closeGuard) return false;
             close();
             return true;
         }
