@@ -78,4 +78,14 @@ public class SplinterSet {
         return route;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SplinterSet)) return false;
+        SplinterSet other = (SplinterSet) o;
+
+        // sets with the same name will be treated as the same set.
+        return this.getName().equals(other.getName());
+    }
+
 }

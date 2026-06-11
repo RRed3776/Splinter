@@ -153,6 +153,10 @@ public class SetsScreen extends Screen {
                                                 if(activeModal instanceof InputModal im) {
                                                     String name = im.getTextInput();
                                                     if (name == null || name.isEmpty()) return;
+                                                    // for now, same names will return. later send a message
+                                                    if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                                                        return;
+                                                    }
                                                     set.renameSet(name);
                                                 }
                                                 activeModal = null;
@@ -205,6 +209,9 @@ public class SetsScreen extends Screen {
                         if(activeModal instanceof InputModal im) {
                             String name = im.getTextInput();
                             if (name == null || name.isEmpty()) return;
+                            if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                                return;
+                            }
                             SplinterClient.setManager.createSet(name);
                         }
                         activeModal = null;
@@ -225,38 +232,6 @@ public class SetsScreen extends Screen {
                     Splinter.LOGGER.info("entering export mode");
                 }
         ));
-
-//        // test button for exporting
-//        addButton(new SplinterButton(screenRight - partitionWidth / 2, screenTop, partitionWidth / 2, createButtonHeight,
-//                new LiteralText("EXPORT"),
-//                () -> {
-//                    // https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-//                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
-//
-//                    String fileName = "test.csv";
-//                    Path out = exportPath.resolve(fileName);
-//                    String outString = out.toString();
-//                    try {
-//                        Files.createDirectories(exportPath);
-//                    } catch (IOException e) {
-//                        Splinter.LOGGER.error(e);
-//                    }
-//
-//                    if (isExporting && !exportSets.isEmpty()) {
-//                        // export the selected sets
-//                        CsvExport.export(exportSets, out);
-//                    } else {
-//                        isExporting = false;
-//                    }
-//
-//                    Splinter.LOGGER.info("out: {}", outString);
-//                    // for now export the active set's times.
-//                    List<SplinterSet> testSets = new ArrayList<>();
-//                    testSets.add(SplinterClient.setManager.getActiveSet());
-//
-//                    CsvExport.export(testSets, out);
-//                }
-//        ));
 
         if (activeModal != null) activeModal.openModal(width, height);
 

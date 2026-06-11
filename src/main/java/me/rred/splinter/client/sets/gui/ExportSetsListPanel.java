@@ -1,5 +1,6 @@
 package me.rred.splinter.client.sets.gui;
 
+import me.rred.splinter.Splinter;
 import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.utils.TruncateText;
@@ -49,16 +50,15 @@ public class ExportSetsListPanel extends ListPanel {
                 hoveredIndex = i;
             }
 
-
-            boolean isSelected = !(exportSets == null) && exportSets.contains(sets.get(i));
+            boolean isSelected = !(exportSets == null) && exportSets.contains(set);
 
             // background color based on hover
             int bgColor = 0x00000000;
 
             if (isSelected)  {
-                bgColor = SplinterColors.alpha(SplinterColors.TEAL_DEEP, 0x90);  // lighter on hover
+                bgColor = SplinterColors.alpha(SplinterColors.TEAL_DEEP, 0x90);
             } else if (isHovered) {
-                bgColor = SplinterColors.alpha(SplinterColors.SOFT_BLUE, 0x90);  // lighter on hover
+                bgColor = SplinterColors.alpha(SplinterColors.SOFT_BLUE, 0x90);
             }
 
             // draw background
@@ -83,15 +83,9 @@ public class ExportSetsListPanel extends ListPanel {
     }
 
     public boolean handleClick(double mouseX, double mouseY, int button) {
-        if (!isMouseOver(mouseX, mouseY)) {
-            return false;
-        }
-        if (onClick == null) {
-            return false;
-        }
-        if (hoveredIndex < 0 || hoveredIndex >= sets.size()) {
-            return false;
-        }
+        if (!isMouseOver(mouseX, mouseY)) return false;
+        if (onClick == null) return false;
+        if (hoveredIndex < 0 || hoveredIndex >= sets.size()) return false;
 
         onClick.accept(sets.get(hoveredIndex), button);
         return true;

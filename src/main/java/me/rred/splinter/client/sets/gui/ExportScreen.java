@@ -74,7 +74,6 @@ public class ExportScreen extends Screen {
                             exportSets.add(set);
                         }
                         setsListPanel.updateExportSets(exportSets);
-                        init();
                     }
                 }
         );
