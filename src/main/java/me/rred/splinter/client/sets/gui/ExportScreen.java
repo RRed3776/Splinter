@@ -28,6 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ExportScreen extends Screen {
     private int screenTop, screenBottom, screenLeft, screenRight;
@@ -153,16 +156,17 @@ public class ExportScreen extends Screen {
                     exportModal = new InputModal("Name File", () -> { // confirm button on input
                         String name = exportModal.getTextInput();
                         if (name == null || name.isEmpty()) return;
-                        if (sets.contains(new SplinterSet(name, false, new Route()))) {
+
+                        //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
+                        Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+
+                        List<String> fileNames = readPathFileNames(exportPath);
+                        Splinter.LOGGER.info("filenames: {}", fileNames);
+                        if (fileNames != null && fileNames.contains(name)) { // block confirm, send message
                             sameNamePopUp.active = true;
-                        } else {
-                            // export given exportSets
-                            Splinter.LOGGER.info("exporting");
-
-                            //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-                            Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
-
-                            String fileName = "test.csv";
+                        }
+                        else { // export the file if all checks pass
+                            String fileName = name + ".csv";
                             Path out = exportPath.resolve(fileName);
                             String outString = out.toString();
                             Splinter.LOGGER.info("out: {}", outString);
@@ -185,28 +189,7 @@ public class ExportScreen extends Screen {
                             init();
                         }
                     });
-//                    // export given exportSets
-//                    Splinter.LOGGER.info("exporting");
-//
-//                    //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-//                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
-//
-//                    String fileName = "test.csv";
-//                    Path out = exportPath.resolve(fileName);
-//                    String outString = out.toString();
-//                    Splinter.LOGGER.info("out: {}", outString);
-//
-//                    try {
-//                        Files.createDirectories(exportPath);
-//                    } catch (IOException e) {
-//                        Splinter.LOGGER.error(e);
-//                    }
-//
-//                    CsvExport.export(exportSets, out);
-//
-//                    // clear the exportSets
-//                    exportSets.clear();
-//                    setsListPanel.updateExportSets(exportSets);
+                    exportModal.openModal(width, height);
                 }
         ));
     }
@@ -214,6 +197,8 @@ public class ExportScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         drawCenteredText(matrixStack, textRenderer, title, width / 2, 10, textColor);
+
+        sameNamePopUp.render(matrixStack, textRenderer);
 
         int topPanelColor = SplinterColors.alpha(SplinterColors.TOP_PANEL, 0x95);;
         fill(matrixStack, screenLeft, screenTop, screenRight, screenTop + tabHeight, topPanelColor);
@@ -278,6 +263,11 @@ public class ExportScreen extends Screen {
 
         // draw buttons
         exportButton.active = !exportSets.isEmpty();
+
+        if (exportModal != null) {
+            exportModal.render(matrixStack, textRenderer, mouseX, mouseY);
+        }
+
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
@@ -293,12 +283,25 @@ public class ExportScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (exportModal != null) {
+            boolean pressed = exportModal.handleClick(mouseX, mouseY, button);
+            if (exportModal != null && !exportModal.isVisible()) exportModal = null;
+            return pressed;
+        }
+
+
         if(setsListPanel.handleClick(mouseX, mouseY, button)) return true;
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // pass input to activeModal
+        if (exportModal != null) {
+            boolean pressed = exportModal.keyPressed(keyCode, scanCode, modifiers);
+            if (!exportModal.isVisible()) exportModal = null;
+            return pressed;
+        }
         // leave screen with Esc or specified hotkey
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || KeyInputHandler.GUI_SETS_BIND.getKeyBinding().matchesKey(keyCode, scanCode)) {
             ExportScreen.toggle();
@@ -308,10 +311,28 @@ public class ExportScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-
+    @Override
+    public boolean charTyped(char chr, int keyCode) {
+        if (exportModal != null) return exportModal.charTyped(chr, keyCode);
+        return super.charTyped(chr, keyCode);
+    }
 
     public List<SplinterSet> getExportSets() {
         return exportSets;
+    }
+
+    public List<String> readPathFileNames(Path path) {
+        // https://www.youtube.com/watch?v=_159xnyO1to
+        List<String> fileNames;
+        try (Stream<Path> stream = Files.walk(path, 1)){
+            fileNames = stream.filter(Files::isRegularFile)
+                    // parse out .csv and get just the filename
+                    .map(p -> p.getFileName().toString().replace(".csv", ""))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            return null;
+        }
+        return fileNames;
     }
 
     public static void toggle() {
