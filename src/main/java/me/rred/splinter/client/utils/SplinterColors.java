@@ -29,6 +29,7 @@ public class SplinterColors {
     // default screen colors
     public static int BORDER = GRAY_BLUE;
     public static int BORDER_OTHER = SOFT_BLUE;
+    public static int BORDER_OTHER2 = MUTED_SLATE;
     public static int BORDER_HOVER = LAVENDER_GRAY;
     public static int TEXT = WHITE;
     public static int SUB_TEXT = SOFT_BLUE;

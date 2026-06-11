@@ -1,6 +1,7 @@
 package me.rred.splinter.client.sets.gui;
 
 import me.rred.splinter.client.sets.SplinterSet;
+import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.utils.TimerFormatter;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -51,7 +52,7 @@ public class TimesListPanel extends ListPanel {
                 textRenderer.draw(matrixStack, "x", delTextX, delTextY, deleteColor);
 
                 // draw bottom border for each record
-                DrawableHelper.fill(matrixStack, x, itemY + LINE_HEIGHT, x + width, itemY + LINE_HEIGHT + 1, 0x80666666);
+                DrawableHelper.fill(matrixStack, x, itemY + LINE_HEIGHT, x + width, itemY + LINE_HEIGHT + 1, SplinterColors.BORDER_OTHER2);
 
                 int textY = itemY + (LINE_HEIGHT - textRenderer.fontHeight + 1) / 2 + 1;
                 String timeText = TimerFormatter.format(times.get(i));

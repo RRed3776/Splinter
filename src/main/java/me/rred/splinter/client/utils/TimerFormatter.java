@@ -7,4 +7,10 @@ public class TimerFormatter {
         long millis = ms % 1000;
         return String.format("%d:%02d.%03d", minutes, seconds, millis);
     }
+
+    public static String secondsFormat(long ms) {
+        long seconds = ms / 1000;
+        long millis = ms % 1000;
+        return String.format("%d.%03d", seconds, millis);
+    }
 }

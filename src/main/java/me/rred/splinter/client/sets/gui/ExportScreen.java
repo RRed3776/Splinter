@@ -12,10 +12,14 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,14 +28,14 @@ import java.util.List;
 
 public class ExportScreen extends Screen {
     private int screenTop, screenBottom, screenLeft, screenRight;
-    private int listTop;
+    private int listTop, buttonsTop;
     private final int[] partitions = new int[3];
     private int partitionWidth;
     private final int borderWidth = 1;
     private static final int textColor = SplinterColors.TEXT;
     private final int tabHeight = 20;
-    private final int buttonLen = 20;
     private ExportSetsListPanel setsListPanel;
+    private SplinterButton exportButton;
 
     private List<SplinterSet> exportSets = new ArrayList<>();
 
@@ -41,28 +45,35 @@ public class ExportScreen extends Screen {
 
     @Override
     protected void init() {
-        buttons.clear();
-        children.clear();
-
         int offset = 25;
         screenTop = offset;
         screenBottom = height - (int)(offset * 1.8);
         screenLeft = offset * 3;
         screenRight = width - (offset * 3);
 
-
-        listTop = screenTop + tabHeight;
+        List<SplinterSet> totalSets = SplinterClient.setManager.getAllSets();
+        List<SplinterSet> sets = new ArrayList<>();
+        for (SplinterSet set : totalSets) {
+            if (set.getTimesSize() == 0) continue;
+            sets.add(set);
+        }
 
         partitions[0] = screenLeft;
         partitionWidth = (screenRight - screenLeft) / 3;
-        // sets list
+
         for (int i = 1; i <= 2; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
 
+        int buttonHeight = 18;
+        int buttonWidth = partitionWidth / 2;
+
+        // top of list is after the buttons
+        buttonsTop = screenTop + tabHeight + borderWidth;
+        listTop = buttonsTop + buttonHeight;
+
         // sets list panel
         int listHeight = screenBottom - listTop;
-        List<SplinterSet> sets = SplinterClient.setManager.getAllSets();
 
         setsListPanel = new ExportSetsListPanel(screenLeft, listTop, partitionWidth, listHeight, sets,
                 (set, button) -> {
@@ -78,8 +89,24 @@ public class ExportScreen extends Screen {
                 }
         );
 
-        int buttonHeight = 18;
-        int buttonWidth = partitionWidth / 2;
+        // deselect all export selections
+        addButton(new SplinterButton(screenLeft, screenTop + tabHeight + borderWidth, buttonWidth, buttonHeight,
+                new LiteralText("CLEAR"),
+                () -> {
+                    // close this screen, open Sets Screen
+                    exportSets.clear();
+                    setsListPanel.updateExportSets(exportSets);
+                }
+        ));
+
+        addButton(new SplinterButton(screenLeft + buttonWidth, screenTop + tabHeight + + borderWidth, buttonWidth, buttonHeight,
+                new LiteralText("ALL"),
+                () -> {
+                    // close this screen, open Sets Screen
+                    exportSets = new ArrayList<>(sets);
+                    setsListPanel.updateExportSets(exportSets);
+                }
+        ));
 
         int cancelX = screenRight - buttonWidth - 5;
         // return to sets screen
@@ -92,50 +119,51 @@ public class ExportScreen extends Screen {
                 }
         ));
 
-        int deselectX = cancelX - buttonWidth - 5;
-        // deselect all export selections
-        addButton(new SplinterButton(deselectX, screenBottom - buttonHeight - 5, buttonWidth, buttonHeight,
-                new LiteralText("DESELECT"),
+        // open exports folder
+        int exportFolderEndX = cancelX - 5;
+        int exportX = partitions[1] + 5;
+        int exportFolderWidth = exportFolderEndX - (exportX + buttonWidth + 5);
+
+        int exportFolderX = exportFolderEndX - exportFolderWidth;
+
+        // open exports folder
+        addButton(new SplinterButton(exportFolderX, screenBottom - buttonHeight - 5, exportFolderWidth, buttonHeight,
+                new LiteralText("OPEN FOLDER"),
                 () -> {
-                    // close this screen, open Sets Screen
+                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+                    // taken from AbstractPackScreen class
+                    Util.getOperatingSystem().open(exportPath.toFile());
+                }
+        ));
+
+        // deselect all export selections
+        addButton(exportButton = new SplinterButton(exportX, screenBottom - buttonHeight - 5, buttonWidth, buttonHeight,
+                new LiteralText("EXPORT"),
+                () -> {
+                    // export given exportSets
+                    Splinter.LOGGER.info("exporting");
+
+                    //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
+                    Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+
+                    String fileName = "test.csv";
+                    Path out = exportPath.resolve(fileName);
+                    String outString = out.toString();
+                    Splinter.LOGGER.info("out: {}", outString);
+
+                    try {
+                        Files.createDirectories(exportPath);
+                    } catch (IOException e) {
+                        Splinter.LOGGER.error(e);
+                    }
+
+                    CsvExport.export(exportSets, out);
+
+                    // clear the exportSets
                     exportSets.clear();
                     setsListPanel.updateExportSets(exportSets);
                 }
         ));
-
-        int exportX = deselectX - buttonWidth - 5;
-        // deselect all export selections
-        if (!(exportSets.isEmpty())) {
-            addButton(new SplinterButton(exportX, screenBottom - buttonHeight - 5, buttonWidth, buttonHeight,
-                    new LiteralText("EXPORT"),
-                    () -> {
-                        // export given exportSets
-                        Splinter.LOGGER.info("exporting");
-
-                        //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
-                        Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
-
-                        String fileName = "test.csv";
-                        Path out = exportPath.resolve(fileName);
-                        String outString = out.toString();
-                        Splinter.LOGGER.info("out: {}", outString);
-
-                        try {
-                            Files.createDirectories(exportPath);
-                        } catch (IOException e) {
-                            Splinter.LOGGER.error(e);
-                        }
-
-                        CsvExport.export(exportSets, out);
-
-                        // clear the exportSets
-                        exportSets.clear();
-                        setsListPanel.updateExportSets(exportSets);
-
-                        init();
-                    }
-            ));
-        }
     }
 
     @Override
@@ -146,7 +174,7 @@ public class ExportScreen extends Screen {
         fill(matrixStack, screenLeft, screenTop, screenRight, screenTop + tabHeight, topPanelColor);
 
         int middlePanelColor = SplinterColors.alpha(SplinterColors.MIDDLE_PANEL, 0xE0); // 88% opacity
-        fill(matrixStack, screenLeft, listTop, screenRight, screenBottom, middlePanelColor);
+        fill(matrixStack, screenLeft, buttonsTop, screenRight, screenBottom, middlePanelColor);
 
         // outer border, screen is inside the border
         int outerBorderColor = SplinterColors.BORDER;
@@ -169,17 +197,22 @@ public class ExportScreen extends Screen {
         int headerMiddleX = partitions[0] + partitionWidth / 2;
         int headerX = headerMiddleX - textRenderer.getWidth(headerText) / 2;
 
-        DrawableHelper.fill(matrixStack, screenLeft, listTop, screenRight,  listTop + borderWidth, headersBorderColor);
+        DrawableHelper.fill(matrixStack, screenLeft, buttonsTop - borderWidth, screenRight,  buttonsTop, headersBorderColor);
         textRenderer.drawWithShadow(matrixStack, "Select Sets", headerX, headerTextY, textColor);
 
         int headerX2 = partitions[1] + 5;
-        textRenderer.drawWithShadow(matrixStack, "Sets To Be Exported", headerX2, headerTextY, textColor);
+        textRenderer.drawWithShadow(matrixStack, "Selected", headerX2, headerTextY, textColor);
 
+        int headerX3 = partitions[2];
+        textRenderer.drawWithShadow(matrixStack, "Trial Amount", headerX3, headerTextY, textColor);
+
+        // top border of sets list
+        DrawableHelper.fill(matrixStack, screenLeft, listTop, partitions[1] - borderWidth,  listTop + borderWidth, headersBorderColor);
 
         // sets list
         double scale = client.getWindow().getScaleFactor();
         int scissorWidth = screenRight - screenLeft;
-        int scissorHeight = screenBottom - listTop;
+        int scissorHeight = screenBottom - listTop - borderWidth;
 
         ScissorUtil.enable(scale, screenLeft, listTop + borderWidth, scissorWidth, scissorHeight);
         setsListPanel.render(matrixStack, textRenderer, mouseX, mouseY, true);
@@ -191,10 +224,15 @@ public class ExportScreen extends Screen {
         for (int i = 0; i < exportSets.size(); i++) {
             SplinterSet set = exportSets.get(i);
             textRenderer.drawWithShadow(matrixStack, set.getName(), partitions[1] + 5,
-                    listTop + 5 + ((3 + textRenderer.fontHeight) * i), textColor);
+                    buttonsTop + 5 + ((3 + textRenderer.fontHeight) * i), textColor);
+            // # of trials
+            String nText = String.valueOf(set.getTimesSize());
+            textRenderer.drawWithShadow(matrixStack, nText, partitions[2],
+                    buttonsTop + 5 + ((3 + textRenderer.fontHeight) * i), textColor);
         }
 
         // draw buttons
+        exportButton.active = !exportSets.isEmpty();
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 

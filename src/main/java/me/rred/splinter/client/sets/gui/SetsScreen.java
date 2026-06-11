@@ -227,6 +227,16 @@ public class SetsScreen extends Screen {
         addButton(new SplinterButton(partitions[3] + 5, screenBottom - exportButtonHeight - 5, partitionWidth, exportButtonHeight,
                 new LiteralText("EXPORT DATA"),
                 () -> {
+                    boolean hasTime = false;
+
+                    for (SplinterSet set : sets) {
+                        if (set.getTimesSize() != 0) {
+                            hasTime = true;
+                            break;
+                        }
+                    }
+                    if (!hasTime) return;
+
                     SetsScreen.toggle();
                     ExportScreen.toggle();
                     Splinter.LOGGER.info("entering export mode");
@@ -235,6 +245,7 @@ public class SetsScreen extends Screen {
 
         if (activeModal != null) activeModal.openModal(width, height);
 
+        // should replace this logic with the active checking later
         // dynamic header buttons to clear the specified displayed set
         int headerWidth = partitionWidth;
         headerButtonLen = 20;
@@ -339,7 +350,7 @@ public class SetsScreen extends Screen {
 
         double scale = client.getWindow().getScaleFactor();
         int scissorWidth = screenRight - screenLeft;
-        int scissorHeight = listBottom - listTop;
+        int scissorHeight = listBottom - listTop - borderWidth;
 
         ScissorUtil.enable(scale, screenLeft, listTop + borderWidth, scissorWidth, scissorHeight);
         boolean showSetsHover = !contextMenu.isVisible();
@@ -442,7 +453,7 @@ public class SetsScreen extends Screen {
         int panelWidth = screenRight - partitions[3];
         int panelX = partitions[3];
 
-        int dividerColor = 0xFF555560;
+        int dividerColor = SplinterColors.BORDER_OTHER2;
         // beginning position of the next column, after the border
         int colWidth = panelWidth / 4;
         int stats2X = panelX + panelWidth / 6 + borderWidth;
@@ -451,7 +462,7 @@ public class SetsScreen extends Screen {
 
         int rowHeight = 18;
         int rowTop = listTop + rowHeight + padding;
-        int rowBottom = listTop + rowHeight * 4;
+        int rowBottom = listTop + rowHeight * 5;
 
 
         // vertical dividers
@@ -463,6 +474,7 @@ public class SetsScreen extends Screen {
         textRenderer.drawWithShadow(matrixStack, "BEST", panelX + padding, rowTop, textColor);
         textRenderer.drawWithShadow(matrixStack, "AVG", panelX + padding, rowTop + rowHeight, textColor);
         textRenderer.drawWithShadow(matrixStack, "SD", panelX + padding, rowTop + rowHeight * 2, textColor);
+        textRenderer.drawWithShadow(matrixStack, "N", panelX + padding, rowTop + rowHeight * 3, textColor);
 
         // headers
         textRenderer.drawWithShadow(matrixStack, "Set A", stats2X + padding, listTop + padding, textColor);
@@ -473,30 +485,36 @@ public class SetsScreen extends Screen {
         long[] setAStats = null;
         long[] setBStats = null;
         if (setA != null && !setA.getTimes().isEmpty()) {
-            setAStats = new long[]{setA.getBest(), setA.getAverage(), setA.getStdDev()};
+            setAStats = new long[]{setA.getBest(), setA.getAverage(), setA.getStdDev(), (long) setA.getTimesSize()};
             for (int i = 0; i < 2; i++) {
                 textRenderer.drawWithShadow(matrixStack, TimerFormatter.format(setAStats[i]), stats2X + padding, rowTop + (i * rowHeight), textColor);
             }
             String sdText = String.format("%.2fs", setAStats[2] / 1000.0);
             textRenderer.drawWithShadow(matrixStack, sdText, stats2X + padding, rowTop + (2 * rowHeight), textColor);
+
+            String nText = String.valueOf(setAStats[3]);
+            textRenderer.drawWithShadow(matrixStack, nText, stats2X + padding, rowTop + (3 * rowHeight), textColor);
         }
         else {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 textRenderer.drawWithShadow(matrixStack, "-", stats2X + padding, rowTop + (i * rowHeight), textColor);
             }
         }
 
         // setB stats
         if (setB != null && !setB.getTimes().isEmpty()) {
-            setBStats = new long[]{setB.getBest(), setB.getAverage(), setB.getStdDev()};
+            setBStats = new long[]{setB.getBest(), setB.getAverage(), setB.getStdDev(), (long) setB.getTimesSize()};
             for (int i = 0; i < 2; i++) {
                 textRenderer.drawWithShadow(matrixStack, TimerFormatter.format(setBStats[i]), stats3X + padding, rowTop + (i* rowHeight), textColor);
             }
             String sdText = String.format("%.2fs", setBStats[2] / 1000.0);
             textRenderer.drawWithShadow(matrixStack, sdText, stats3X + padding, rowTop + (2 * rowHeight), textColor);
+
+            String nText = String.valueOf(setBStats[3]);
+            textRenderer.drawWithShadow(matrixStack, nText, stats3X + padding, rowTop + (3 * rowHeight), textColor);
         }
         else {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 textRenderer.drawWithShadow(matrixStack, "-", stats3X + padding, rowTop + (i * rowHeight), textColor);
             }
         }
