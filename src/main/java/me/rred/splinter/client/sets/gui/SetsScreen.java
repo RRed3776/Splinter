@@ -63,7 +63,6 @@ public class SetsScreen extends Screen {
     private int partitionWidth;
     private int lastClickX, lastClickY;
     private SplinterModal activeModal;
-    private PopUpMessage sameNamePopUp;
 
     public SetsScreen() {
         super(new LiteralText("Splinter Sets"));
@@ -97,8 +96,6 @@ public class SetsScreen extends Screen {
         for (int i = 1; i <= 3; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
-
-        sameNamePopUp = new PopUpMessage(0, 0, "Name Already Exists!");
 
         // panels for middle section
         int listHeight = listBottom - listTop;
@@ -156,10 +153,11 @@ public class SetsScreen extends Screen {
                                             activeModal = new InputModal("Rename Set", () -> {
                                                 if(activeModal instanceof InputModal im) {
                                                     String name = im.getTextInput();
-                                                    if (name == null || name.isEmpty()) return;
-                                                    // for now, same names will return. later send a message
-                                                    if (sets.contains(new SplinterSet(name, false, new Route()))) {
-                                                        sameNamePopUp.active = true;
+                                                    if (name == null || name.isEmpty()) {
+                                                        im.setPopUp(false);
+                                                    }
+                                                    else if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                                                        im.setPopUp(true);
                                                     } else {
                                                         set.renameSet(name);
                                                         activeModal.closeGuard = false;
@@ -214,9 +212,11 @@ public class SetsScreen extends Screen {
                     activeModal = new InputModal("Choose Set Name", () -> {
                         if(activeModal instanceof InputModal im) {
                             String name = im.getTextInput();
-                            if (name == null || name.isEmpty()) return;
-                            if (sets.contains(new SplinterSet(name, false, new Route()))) {
-                                sameNamePopUp.active = true;
+                            if (name == null || name.isEmpty()) {
+                                im.setPopUp(false);
+                            }
+                            else if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                                im.setPopUp(true);
                             } else {
                                 SplinterClient.setManager.createSet(name);
                                 activeModal.closeGuard = false;
@@ -286,9 +286,6 @@ public class SetsScreen extends Screen {
 
         // GUI title text
         drawCenteredText(matrixStack, textRenderer, title, width / 2, 10, textColor);
-
-        // render PopUps
-        sameNamePopUp.render(matrixStack, textRenderer);
 
         // top panel (create button, headers)
         int topPanelColor = SplinterColors.alpha(SplinterColors.TOP_PANEL, 0x95);;

@@ -29,4 +29,7 @@ public abstract class SplinterModal {
     public void setSubmessage(String subMessage) {
         this.subMessage = subMessage;
     }
+    public int getHeight() {
+        return height;
+    }
 }

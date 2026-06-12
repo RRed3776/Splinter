@@ -43,7 +43,6 @@ public class ExportScreen extends Screen {
     private ExportSetsListPanel setsListPanel;
     private SplinterButton exportButton;
     private InputModal exportModal;
-    private PopUpMessage sameNamePopUp;
 
     private List<SplinterSet> exportSets = new ArrayList<>();
 
@@ -75,8 +74,6 @@ public class ExportScreen extends Screen {
         for (int i = 1; i <= 2; i++) {
             partitions[i] = partitions[i - 1] + partitionWidth + borderWidth;
         }
-
-        sameNamePopUp = new PopUpMessage(0, 0, "Name Already Exists!");
 
         int buttonHeight = 18;
         int buttonWidth = partitionWidth / 2;
@@ -163,7 +160,7 @@ public class ExportScreen extends Screen {
                         List<String> fileNames = readPathFileNames(exportPath);
                         Splinter.LOGGER.info("filenames: {}", fileNames);
                         if (fileNames != null && fileNames.contains(name)) { // block confirm, send message
-                            sameNamePopUp.active = true;
+                            exportModal.setPopUp(true);
                         }
                         else { // export the file if all checks pass
                             String fileName = name + ".csv";
@@ -197,8 +194,6 @@ public class ExportScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         drawCenteredText(matrixStack, textRenderer, title, width / 2, 10, textColor);
-
-        sameNamePopUp.render(matrixStack, textRenderer);
 
         int topPanelColor = SplinterColors.alpha(SplinterColors.TOP_PANEL, 0x95);;
         fill(matrixStack, screenLeft, screenTop, screenRight, screenTop + tabHeight, topPanelColor);
