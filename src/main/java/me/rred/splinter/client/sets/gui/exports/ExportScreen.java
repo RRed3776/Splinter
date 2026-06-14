@@ -1,34 +1,29 @@
-package me.rred.splinter.client.sets.gui;
+package me.rred.splinter.client.sets.gui.exports;
 
 import me.rred.splinter.Splinter;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
-import me.rred.splinter.client.routing.Route;
 import me.rred.splinter.client.sets.SplinterSet;
+import me.rred.splinter.client.sets.gui.SetsScreen;
 import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
 import me.rred.splinter.client.widgets.modals.InputModal;
-import me.rred.splinter.client.widgets.modals.PopUpMessage;
 import me.rred.splinter.export.CsvExport;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

@@ -4,6 +4,7 @@ import com.sun.jna.platform.unix.X11;
 import me.rred.splinter.Splinter;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
+import me.rred.splinter.client.widgets.SplinterExitButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -15,7 +16,7 @@ import org.lwjgl.system.CallbackI;
 
 import static net.minecraft.client.gui.DrawableHelper.fill;
 
-public class InputModal extends SplinterModal{
+public class InputModal extends SplinterModal {
     private final String allowedChars;
     private final Runnable onConfirm;
     private TextFieldWidget input;
@@ -24,6 +25,7 @@ public class InputModal extends SplinterModal{
     private int subTextY;
     private int popUpTextY;
     private boolean popUpActive;
+    private SplinterExitButton exitButton;
 
     public InputModal(String message, Runnable onConfirm) {
         this.message = message;
@@ -40,8 +42,9 @@ public class InputModal extends SplinterModal{
     public void openModal(int screenWidth, int screenHeight) {
         MinecraftClient client = MinecraftClient.getInstance();
         TextRenderer textRenderer = client.textRenderer;
+        visible = true;
 
-        this.width = (int)(screenWidth * 0.30);
+        this.width = (int) (screenWidth * 0.30);
         int subMessageWidth = textRenderer.getWidth(subMessage) + 20;
         if (width < subMessageWidth) {
             this.width = subMessageWidth;
@@ -50,32 +53,34 @@ public class InputModal extends SplinterModal{
         // make room for sub message if necessary
         int lineHeight = textRenderer.fontHeight * 2;
         if (subMessage != null) {
-            this.height = (int)(lineHeight * 6); // 5.25, + .75; .5 for text, .25 for gap between messages
+            this.height = (int) (lineHeight * 6); // 5.25, + .75; .5 for text, .25 for gap between messages
         } else {
-            this.height = (int)(lineHeight * 5.25); // 4.5
+            this.height = (int) (lineHeight * 5.25); // 4.5
         }
 
         this.x = (screenWidth - width) / 2;
         this.y = (screenHeight - height) / 2;
-        visible = true;
+
+        // initialize exit button top right
+        exitButton = new SplinterExitButton(x + width - 11, y, 11, this::close);
 
         // build the lines from top to bottom
-        mainTextY = this.y + (int)(lineHeight * 0.5); // text always has a .5 gap from top
-        subTextY = mainTextY + (int)(lineHeight * 0.75);
+        mainTextY = this.y + (int) (lineHeight * 0.5); // text always has a .5 gap from top
+        subTextY = mainTextY + (int) (lineHeight * 0.75);
         // shift if there is a submessage
         // +.75, .5 for message height, .25 for gap
-        popUpTextY = subMessage == null ? mainTextY + (int)(lineHeight * 0.75) : subTextY + (int)(lineHeight * 0.75);
+        popUpTextY = subMessage == null ? mainTextY + (int) (lineHeight * 0.75) : subTextY + (int) (lineHeight * 0.75);
 
-        int inputWidth = (int)(width * 0.85);
+        int inputWidth = (int) (width * 0.85);
         inputX = x + (width - inputWidth) / 2;
         // +1, .5 for message height, .5 for gap
         int inputY = popUpTextY + lineHeight;
 
-        int buttonWidth = (int)(width * 0.5);
+        int buttonWidth = (int) (width * 0.5);
         // +1.5, 1 for input length, .5 for gap between.
         // panel height must be .5 longer than the sum of these so there is a .5 gap from bottom
         // maybe height can be built after somehow, but probably not since y is dependent on it
-        int buttonY = inputY + (int)(lineHeight * 1.5);
+        int buttonY = inputY + (int) (lineHeight * 1.5);
 
         input = new TextFieldWidget(textRenderer, inputX, inputY, inputWidth, lineHeight, new LiteralText(""));
         input.setMaxLength(20);
@@ -90,6 +95,7 @@ public class InputModal extends SplinterModal{
     public void render(MatrixStack matrixStack, TextRenderer textRenderer,
                        int mouseX, int mouseY) {
         // push the modal 1 pixel in Z to put it in front of the main GUI
+        if (!visible) return;
         matrixStack.push();
         matrixStack.translate(0, 0, 1);
 
@@ -117,6 +123,10 @@ public class InputModal extends SplinterModal{
         if (input != null) {
             input.render(matrixStack, mouseX, mouseY, 0);
         }
+
+        if (exitButton != null) {
+            exitButton.renderButton(matrixStack, mouseX, mouseY);
+        }
         matrixStack.pop();
     }
 
@@ -131,6 +141,7 @@ public class InputModal extends SplinterModal{
 
     public boolean handleClick(double mouseX, double mouseY, int button) {
         if (input != null) input.mouseClicked(mouseX, mouseY, button);
+        if (exitButton != null) return exitButton.handleClick(mouseX, mouseY, button);
         if (confirmButton != null && confirmButton.mouseClicked(mouseX, mouseY, button)) {
             if (closeGuard) return false;
             close();

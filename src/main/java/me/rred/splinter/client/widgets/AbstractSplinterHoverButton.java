@@ -1,17 +1,24 @@
 package me.rred.splinter.client.widgets;
 
-public abstract class AbstractSplinterHoverButton {
-    protected int x, y, width, height;
+import net.minecraft.client.util.math.MatrixStack;
 
-    public AbstractSplinterHoverButton(int x, int y, int width, int height) {
+public abstract class AbstractSplinterHoverButton {
+    protected int x, y, scalar;
+    protected boolean hovered;
+    public boolean visible = true;
+
+    public AbstractSplinterHoverButton(int x, int y, int len) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.scalar = len;
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return mouseX >= x && mouseX <= x + width &&
-                mouseY >= y && mouseY <= y + height;
+        return mouseX >= x && mouseX <= x + scalar &&
+                mouseY >= y && mouseY <= y + scalar;
     }
+
+    public abstract void onPress();
+
+    public abstract void renderButton(MatrixStack matrixStack, int mouseX, int mouseY);
 }

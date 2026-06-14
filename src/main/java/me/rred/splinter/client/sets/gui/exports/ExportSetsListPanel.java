@@ -1,7 +1,7 @@
-package me.rred.splinter.client.sets.gui;
+package me.rred.splinter.client.sets.gui.exports;
 
-import me.rred.splinter.Splinter;
 import me.rred.splinter.client.sets.SplinterSet;
+import me.rred.splinter.client.sets.gui.ListPanel;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.utils.TruncateText;
 import net.minecraft.client.font.TextRenderer;

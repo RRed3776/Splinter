@@ -4,34 +4,25 @@ import me.rred.splinter.Splinter;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.routing.Route;
+import me.rred.splinter.client.sets.gui.exports.ExportScreen;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
 import me.rred.splinter.client.widgets.modals.ConfirmModal;
 import me.rred.splinter.client.widgets.modals.InputModal;
-import me.rred.splinter.client.widgets.modals.PopUpMessage;
 import me.rred.splinter.client.widgets.modals.SplinterModal;
 import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.TimerFormatter;
 import me.rred.splinter.client.utils.TruncateText;
-import me.rred.splinter.export.CsvExport;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -375,8 +366,7 @@ public class SetsScreen extends Screen {
         // render stats and overlays
         renderStats(matrixStack);
 
-        // overlay renders on top of everything
-//        if (activeOverlay != Overlay.NONE) renderOverlay(matrixStack);
+        // modals render on top of everything
         if (activeModal != null) {
             activeModal.render(matrixStack, textRenderer, mouseX, mouseY);
         }
