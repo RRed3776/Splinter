@@ -22,6 +22,8 @@ import org.lwjgl.glfw.GLFW;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -145,43 +147,48 @@ public class ExportScreen extends Screen {
         addButton(exportButton = new SplinterButton(exportX, screenBottom - buttonHeight - 5, buttonWidth, buttonHeight,
                 new LiteralText("EXPORT"),
                 () -> {
-                    exportModal = new InputModal("Name File", () -> { // confirm button on input
-                        String name = exportModal.getTextInput();
-                        if (name == null || name.isEmpty()) return;
-
                         //https://stackoverflow.com/questions/63220762/how-to-get-minecraft-path-with-fabric
                         Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
 
-                        List<String> fileNames = readPathFileNames(exportPath);
-                        Splinter.LOGGER.info("filenames: {}", fileNames);
-                        if (fileNames != null && fileNames.contains(name)) { // block confirm, send message
-                            exportModal.setPopUp(true);
+                        //https://stackoverflow.com/a/23068695
+                        // Get the current date and time
+                        LocalDateTime now = LocalDateTime.now();
+
+                        // Define the format
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                        // Format the current date and time
+                        String timestamp = now.format(formatter);
+
+                        // check if files with timestamp already exist and add -n+1 after
+
+                        List<String> names = readPathFileNames(exportPath);
+                        int fileNumber = 0;
+                        if (names != null) {
+                            fileNumber = countTSFileAmount(timestamp, names);
                         }
-                        else { // export the file if all checks pass
-                            String fileName = name + ".csv";
-                            Path out = exportPath.resolve(fileName);
-                            String outString = out.toString();
-                            Splinter.LOGGER.info("out: {}", outString);
 
-                            try {
-                                Files.createDirectories(exportPath);
-                            } catch (IOException e) {
-                                Splinter.LOGGER.error(e);
-                            }
-
-                            CsvExport.export(exportSets, out);
-
-                            // clear the exportSets
-                            exportSets.clear();
-                            setsListPanel.updateExportSets(exportSets);
-
-                            SplinterClient.setManager.createSet(name);
-                            exportModal.closeGuard = false;
-                            exportModal = null;
-                            init();
+                        String fileNumberString = "";
+                        if (fileNumber != 0) {
+                            fileNumberString = "_(" + String.valueOf(fileNumber) + ")";
                         }
-                    });
-                    exportModal.openModal(width, height);
+
+                        String fileName = "splinter_export_" + timestamp + fileNumberString + ".csv";
+                        Path out = exportPath.resolve(fileName);
+                        String outString = out.toString();
+                        Splinter.LOGGER.info("out: {}", outString);
+
+                        try {
+                            Files.createDirectories(exportPath);
+                        } catch (IOException e) {
+                            Splinter.LOGGER.error(e);
+                        }
+
+                        CsvExport.export(exportSets, out);
+
+                        // clear the exportSets
+                        exportSets.clear();
+                        setsListPanel.updateExportSets(exportSets);
                 }
         ));
     }
@@ -279,7 +286,6 @@ public class ExportScreen extends Screen {
             return pressed;
         }
 
-
         if(setsListPanel.handleClick(mouseX, mouseY, button)) return true;
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -311,20 +317,6 @@ public class ExportScreen extends Screen {
         return exportSets;
     }
 
-    public List<String> readPathFileNames(Path path) {
-        // https://www.youtube.com/watch?v=_159xnyO1to
-        List<String> fileNames;
-        try (Stream<Path> stream = Files.walk(path, 1)){
-            fileNames = stream.filter(Files::isRegularFile)
-                    // parse out .csv and get just the filename
-                    .map(p -> p.getFileName().toString().replace(".csv", ""))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            return null;
-        }
-        return fileNames;
-    }
-
     public static void toggle() {
         MinecraftClient client = MinecraftClient.getInstance();
         assert(client != null);
@@ -334,5 +326,35 @@ public class ExportScreen extends Screen {
         else {
             client.openScreen(new ExportScreen());
         }
+    }
+
+    private List<String> readPathFileNames(Path path) {
+        // https://www.youtube.com/watch?v=_159xnyO1to
+        List<String> fileNames;
+        try (Stream<Path> stream = Files.walk(path, 1)){
+            fileNames = stream.filter(Files::isRegularFile)
+                    // parse out .csv and get just the filename
+                    .map(p -> p.getFileName().toString().replace(".csv", ""))
+                    .sorted()
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            return null;
+        }
+        return fileNames;
+    }
+
+    private int countTSFileAmount(String timestamp, List<String> names) {
+        int count = 0;
+        for (String name : names) {
+            // only capture thte timestamp between splinter_export_ and _(n)
+            String nameTimestamp = name.substring(16, 26);
+            Splinter.LOGGER.info("name: {}", nameTimestamp);
+            if (nameTimestamp.equals(timestamp)) {
+                count++;
+            } else if (count > 0) {
+                break; // already passed all matching entries
+            }
+        }
+        return count;
     }
 }

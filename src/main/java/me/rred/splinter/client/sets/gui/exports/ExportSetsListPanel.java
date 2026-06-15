@@ -31,6 +31,13 @@ public class ExportSetsListPanel extends ListPanel {
 
     @Override
     public void render(MatrixStack matrixStack, TextRenderer textRenderer, int mouseX, int mouseY, boolean showHover) {
+        if (getItemCount() == 0) {
+            String text = "No Data!";
+            int textX = x + (width - textRenderer.getWidth(text)) / 2;
+            textRenderer.drawWithShadow(matrixStack, text, textX, y + 5, SplinterColors.TEXT);
+            return;
+        }
+
         hoveredIndex = -1;
 
         for (int i = 0; i < getItemCount(); i++) {

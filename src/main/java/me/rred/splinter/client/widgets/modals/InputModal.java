@@ -44,11 +44,12 @@ public class InputModal extends SplinterModal {
         TextRenderer textRenderer = client.textRenderer;
         visible = true;
 
+        // width height and positions to be in the middle of the screen
         this.width = (int) (screenWidth * 0.30);
         int subMessageWidth = textRenderer.getWidth(subMessage) + 20;
         if (width < subMessageWidth) {
             this.width = subMessageWidth;
-        } // extend if the submessage is longer thn the normal width
+        } // extend if the submessage is longer than the normal width
 
         // make room for sub message if necessary
         int lineHeight = textRenderer.fontHeight * 2;
@@ -61,8 +62,8 @@ public class InputModal extends SplinterModal {
         this.x = (screenWidth - width) / 2;
         this.y = (screenHeight - height) / 2;
 
-        // initialize exit button top right
-        exitButton = new SplinterExitButton(x + width - 11, y, 11, this::close);
+        // initialize exit button top right with scalar 9
+        exitButton = new SplinterExitButton(x + width - 10, y + 1, 9, this::close);
 
         // build the lines from top to bottom
         mainTextY = this.y + (int) (lineHeight * 0.5); // text always has a .5 gap from top
@@ -141,7 +142,7 @@ public class InputModal extends SplinterModal {
 
     public boolean handleClick(double mouseX, double mouseY, int button) {
         if (input != null) input.mouseClicked(mouseX, mouseY, button);
-        if (exitButton != null) return exitButton.handleClick(mouseX, mouseY, button);
+        if (exitButton != null && exitButton.handleClick(mouseX, mouseY, button)) return true;
         if (confirmButton != null && confirmButton.mouseClicked(mouseX, mouseY, button)) {
             if (closeGuard) return false;
             close();

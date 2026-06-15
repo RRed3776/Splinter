@@ -39,8 +39,6 @@ public class SetsScreen extends Screen {
     private SplinterSet setA;
     private SplinterSet setB;
     private static final int textColor = SplinterColors.TEXT;
-    private boolean isExporting = false;
-    private List<SplinterSet> exportSets = new ArrayList<>();
 
     private static final Identifier WARNING_ICON = new Identifier("splinter", "textures/areyousuresmallest.png");
 
@@ -227,18 +225,8 @@ public class SetsScreen extends Screen {
                 new LiteralText("EXPORT DATA"),
                 () -> {
                     boolean hasTime = false;
-
-                    for (SplinterSet set : sets) {
-                        if (set.getTimesSize() != 0) {
-                            hasTime = true;
-                            break;
-                        }
-                    }
-                    if (!hasTime) return;
-
                     SetsScreen.toggle();
                     ExportScreen.toggle();
-                    Splinter.LOGGER.info("entering export mode");
                 }
         ));
 

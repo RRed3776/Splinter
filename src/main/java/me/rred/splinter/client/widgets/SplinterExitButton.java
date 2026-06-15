@@ -48,10 +48,4 @@ public class SplinterExitButton extends AbstractSplinterHoverButton {
         }
         return false;
     }
-
-
-
-
-
-
 }

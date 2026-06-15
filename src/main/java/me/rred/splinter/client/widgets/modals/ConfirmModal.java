@@ -2,6 +2,7 @@ package me.rred.splinter.client.widgets.modals;
 
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
+import me.rred.splinter.client.widgets.SplinterExitButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -14,6 +15,7 @@ import static net.minecraft.client.gui.DrawableHelper.fill;
 public class ConfirmModal extends SplinterModal{
     private final Runnable onConfirm;
     private int textY;
+    private SplinterExitButton exitButton;
 
     public ConfirmModal(String message, Runnable onConfirm) {
         this.message = message;
@@ -23,6 +25,7 @@ public class ConfirmModal extends SplinterModal{
     public void openModal(int screenWidth, int screenHeight) {
         MinecraftClient client = MinecraftClient.getInstance();
         TextRenderer textRenderer = client.textRenderer;
+        visible = true;
 
         this.width = textRenderer.getWidth(message) + 20;
 
@@ -31,7 +34,8 @@ public class ConfirmModal extends SplinterModal{
 
         this.x = (screenWidth - width) / 2;
         this.y = (screenHeight - height) / 2;
-        visible = true;
+        // initialize exit button top right with scalar 9
+        exitButton = new SplinterExitButton(x + width - 10, y + 1, 9, this::close);
 
         textY = this.y + (int)(lineHeight * 0.5);
 
@@ -48,6 +52,7 @@ public class ConfirmModal extends SplinterModal{
     public void render(MatrixStack matrixStack, TextRenderer textRenderer,
                        int mouseX, int mouseY) {
         // push the modal 1 pixel in Z to put it in front of the main GUI
+        if (!visible) return;
         matrixStack.push();
         matrixStack.translate(0, 0, 1);
 
@@ -61,10 +66,15 @@ public class ConfirmModal extends SplinterModal{
         if (confirmButton != null) {
             confirmButton.render(matrixStack, mouseX, mouseY, 0);
         }
+
+        if (exitButton != null) {
+            exitButton.renderButton(matrixStack, mouseX, mouseY);
+        }
         matrixStack.pop();
     }
 
     public boolean handleClick(double mouseX, double mouseY, int button) {
+        if (exitButton != null && exitButton.handleClick(mouseX, mouseY, button)) return true;
         if (confirmButton != null && confirmButton.mouseClicked(mouseX, mouseY, button)) {
             close();
             return true;
