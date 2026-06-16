@@ -10,15 +10,22 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.List;
+
 import static net.minecraft.client.gui.DrawableHelper.fill;
 
 public class ConfirmModal extends SplinterModal{
     private final Runnable onConfirm;
-    private int textY;
+    private int startTextY;
     private SplinterExitButton exitButton;
 
     public ConfirmModal(String message, Runnable onConfirm) {
         this.message = message;
+        this.onConfirm = onConfirm;
+    }
+
+    public ConfirmModal(List<String> messages, Runnable onConfirm) {
+        this.messages = messages;
         this.onConfirm = onConfirm;
     }
 
@@ -27,21 +34,36 @@ public class ConfirmModal extends SplinterModal{
         TextRenderer textRenderer = client.textRenderer;
         visible = true;
 
-        this.width = textRenderer.getWidth(message) + 20;
+        if (message != null) {
+            this.width = textRenderer.getWidth(message) + 20;
+        } else { // read messages
+            int maxWidth = 0;
+            for (String text : messages) {
+                if (textRenderer.getWidth(text) > maxWidth) {
+                    maxWidth = textRenderer.getWidth(text);
+                }
+            }
+            this.width = maxWidth + 20;
+        }
 
         int lineHeight = textRenderer.fontHeight * 2;
         this.height = lineHeight * 3;
+        // extend height if there are multiple lines
+        if (messages != null) {
+            this.height = lineHeight * (2 + messages.size());
+        }
 
         this.x = (screenWidth - width) / 2;
         this.y = (screenHeight - height) / 2;
         // initialize exit button top right with scalar 9
         exitButton = new SplinterExitButton(x + width - 10, y + 1, 9, this::close);
 
-        textY = this.y + (int)(lineHeight * 0.5);
+        startTextY = this.y + (int) (lineHeight * 0.5);
 
         int buttonWidth = (int)(width * 0.75);
         int buttonX = x + (width - buttonWidth) / 2;
-        int buttonY = textY + lineHeight;
+        // account for multiple lines, move the confirm button farther down
+        int buttonY = messages == null ? startTextY + lineHeight : startTextY + lineHeight * messages.size();
 
         confirmButton = new SplinterButton(buttonX, buttonY, buttonWidth, lineHeight,
                 new LiteralText("CONFIRM"),
@@ -60,9 +82,17 @@ public class ConfirmModal extends SplinterModal{
         fill(matrixStack, x, y, x + width, y + height, SplinterColors.BORDER);
         fill(matrixStack, x + 1, y + 1, x + width - 1, y + height - 1, SplinterColors.MODAL_BG);
 
-        int textX = x + (width / 2) - textRenderer.getWidth(message) / 2;
+        int lineHeight = textRenderer.fontHeight * 2;
+        if (message != null) {
+            int textX = x + (width / 2) - textRenderer.getWidth(message) / 2;
+            textRenderer.drawWithShadow(matrixStack, message, textX, startTextY, SplinterColors.TEXT);
+        } else {
+            for (int i = 0; i < messages.size(); i++) {
+                int textX = x + (width / 2) - textRenderer.getWidth(messages.get(i)) / 2;
+                textRenderer.drawWithShadow(matrixStack, messages.get(i), textX, startTextY + lineHeight * i, SplinterColors.TEXT);
+            }
+        }
 
-        textRenderer.drawWithShadow(matrixStack, message, textX, textY, SplinterColors.TEXT);
         if (confirmButton != null) {
             confirmButton.render(matrixStack, mouseX, mouseY, 0);
         }

@@ -230,6 +230,26 @@ public class SetsScreen extends Screen {
                 }
         ));
 
+        // open hints overlay
+        int  iButtonLen = 18;
+        addButton(new SplinterButton(screenRight - iButtonLen - 5, screenBottom - iButtonLen - 5, iButtonLen, iButtonLen,
+                new LiteralText("i"),
+                () -> {
+                    String keybind = KeyInputHandler.TOGGLE_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
+                    List<String> messages = new ArrayList<>();
+                    messages.add("enter idle mode by pressing the \\\"■\\\" symbol");
+                    messages.add("enter edit mode with " + "\"" + keybind + "\"");
+
+
+                    activeModal = new ConfirmModal(messages, () -> {
+                        activeModal = null;
+                        init();
+                    });
+                    activeModal.openModal(width, height);
+                }
+        ));
+
+
         if (activeModal != null) activeModal.openModal(width, height);
 
         // should replace this logic with the active checking later

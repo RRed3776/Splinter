@@ -5,6 +5,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 
+import java.util.List;
+
 public abstract class SplinterModal {
     protected int x, y, width, height;
     protected SplinterButton confirmButton;
@@ -12,6 +14,7 @@ public abstract class SplinterModal {
     public boolean closeGuard = true;
     protected String message;
     protected String subMessage = null;
+    protected List<String> messages;
 
     public abstract void openModal(int screenWidth, int screenHeight);
     public abstract void render(MatrixStack matrixStack, TextRenderer textRenderer,
