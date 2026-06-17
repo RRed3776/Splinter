@@ -38,8 +38,6 @@ Fabric API 0.18.0 build 387: https://modrinth.com/mod/fabric-api/versions?g=1.16
 
 ## TODO:
 - Persistent Data
-- Exporting data to CSV file
-- Replace trial numbers with trial count
 - Unlimited active sets / Intermediary splits (splits between START and END)
 - Set moving / rework general (drag n drop)
 - Piglin Stats (Pig count, Barter Splits, Trade start/end)

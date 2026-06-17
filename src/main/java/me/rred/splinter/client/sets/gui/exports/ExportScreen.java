@@ -39,7 +39,8 @@ public class ExportScreen extends Screen {
     private final int tabHeight = 20;
     private ExportSetsListPanel setsListPanel;
     private SplinterButton exportButton;
-    private InputModal exportModal;
+    private boolean popUpActive = false;
+    private String popUpText;
 
     private List<SplinterSet> exportSets = new ArrayList<>();
 
@@ -176,7 +177,6 @@ public class ExportScreen extends Screen {
                         String fileName = "splinter_export_" + timestamp + fileNumberString + ".csv";
                         Path out = exportPath.resolve(fileName);
                         String outString = out.toString();
-                        Splinter.LOGGER.info("out: {}", outString);
 
                         try {
                             Files.createDirectories(exportPath);
@@ -184,7 +184,15 @@ public class ExportScreen extends Screen {
                             Splinter.LOGGER.error(e);
                         }
 
-                        CsvExport.export(exportSets, out);
+                        try {
+                            CsvExport.export(exportSets, out);
+                            popUpText = "Export Successful!";
+                            popUpActive = true;
+                        } catch (IOException e) {
+                            Splinter.LOGGER.error(e);
+                            popUpText = "Error Exporting";
+                            popUpActive = true;
+                        }
 
                         // clear the exportSets
                         exportSets.clear();
@@ -241,6 +249,10 @@ public class ExportScreen extends Screen {
         int scissorWidth = screenRight - screenLeft;
         int scissorHeight = screenBottom - listTop - borderWidth;
 
+        if (popUpActive) {
+            textRenderer.drawWithShadow(matrixStack, popUpText, headerX2, buttonsTop + 5, textColor);
+        }
+
         ScissorUtil.enable(scale, screenLeft, listTop + borderWidth, scissorWidth, scissorHeight);
         setsListPanel.render(matrixStack, textRenderer, mouseX, mouseY, true);
         ScissorUtil.disable();
@@ -261,10 +273,6 @@ public class ExportScreen extends Screen {
         // draw buttons
         exportButton.active = !exportSets.isEmpty();
 
-        if (exportModal != null) {
-            exportModal.render(matrixStack, textRenderer, mouseX, mouseY);
-        }
-
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
@@ -280,24 +288,15 @@ public class ExportScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (exportModal != null) {
-            boolean pressed = exportModal.handleClick(mouseX, mouseY, button);
-            if (exportModal != null && !exportModal.isVisible()) exportModal = null;
-            return pressed;
+        if(setsListPanel.handleClick(mouseX, mouseY, button)) {
+            popUpActive = false;
+            return true;
         }
-
-        if(setsListPanel.handleClick(mouseX, mouseY, button)) return true;
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // pass input to activeModal
-        if (exportModal != null) {
-            boolean pressed = exportModal.keyPressed(keyCode, scanCode, modifiers);
-            if (!exportModal.isVisible()) exportModal = null;
-            return pressed;
-        }
         // leave screen with Esc or specified hotkey
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || KeyInputHandler.GUI_SETS_BIND.getKeyBinding().matchesKey(keyCode, scanCode)) {
             ExportScreen.toggle();
@@ -305,12 +304,6 @@ public class ExportScreen extends Screen {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char chr, int keyCode) {
-        if (exportModal != null) return exportModal.charTyped(chr, keyCode);
-        return super.charTyped(chr, keyCode);
     }
 
     public List<SplinterSet> getExportSets() {
@@ -348,7 +341,6 @@ public class ExportScreen extends Screen {
         for (String name : names) {
             // only capture thte timestamp between splinter_export_ and _(n)
             String nameTimestamp = name.substring(16, 26);
-            Splinter.LOGGER.info("name: {}", nameTimestamp);
             if (nameTimestamp.equals(timestamp)) {
                 count++;
             } else if (count > 0) {

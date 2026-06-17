@@ -239,7 +239,7 @@ public class SetsScreen extends Screen {
                     List<String> messages = new ArrayList<>();
                     messages.add("enter idle mode by pressing the \\\"■\\\" symbol");
                     messages.add("enter edit mode with " + "\"" + keybind + "\"");
-
+                    messages.add("Shift + Right Mouse to quick display a set");
 
                     activeModal = new ConfirmModal(messages, () -> {
                         activeModal = null;
@@ -297,24 +297,6 @@ public class SetsScreen extends Screen {
         int textHeight = textRenderer.fontHeight;
         int vertGap = 3;
         int hintGap = 10;
-
-        // put this into a hint button later
-//        // context menu hint
-//        String menuHintText1 = "Shift + Right Mouse";
-//        String menuHintText2 = "to quick display a set";
-//
-//        textRenderer.drawWithShadow(matrixStack, menuHintText1, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 5, textColor);
-//        textRenderer.drawWithShadow(matrixStack, menuHintText2, partitions[3] + 5, screenBottom - hintGap - (vertGap + textHeight) * 4, textColor);// top panel (tabs)
-//
-//        // edit mode hint
-//        String keybind = KeyInputHandler.TOGGLE_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
-//        String editMessage1 = "enter idle mode by";
-//        String editMessage2 = "pressing the \"■\" symbol";
-//        String editMessage3 = "& enter edit mode with " + "\"" + keybind + "\"";
-//
-//        textRenderer.drawWithShadow(matrixStack, editMessage1, partitions[3] + 5, screenBottom - (vertGap + textHeight)* 3, textColor);
-//        textRenderer.drawWithShadow(matrixStack, editMessage2, partitions[3] + 5, screenBottom - (vertGap + textHeight) * 2, textColor);
-//        textRenderer.drawWithShadow(matrixStack, editMessage3, partitions[3] + 5, screenBottom - (vertGap + textHeight), textColor);// top panel (tabs)
 
         // outer border, screen is inside the border
         int outerBorderColor = SplinterColors.BORDER;
