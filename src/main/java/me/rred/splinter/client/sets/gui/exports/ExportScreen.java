@@ -139,6 +139,11 @@ public class ExportScreen extends Screen {
                 new LiteralText("OPEN FOLDER"),
                 () -> {
                     Path exportPath = FabricLoader.getInstance().getGameDir().resolve("splinter/exports");
+                    try {
+                        Files.createDirectories(exportPath);
+                    } catch (IOException e) {
+                        Splinter.LOGGER.info("Could not create export directory!");
+                    }
                     // taken from AbstractPackScreen class
                     Util.getOperatingSystem().open(exportPath.toFile());
                 }
@@ -176,7 +181,6 @@ public class ExportScreen extends Screen {
 
                         String fileName = "splinter_export_" + timestamp + fileNumberString + ".csv";
                         Path out = exportPath.resolve(fileName);
-                        String outString = out.toString();
 
                         try {
                             Files.createDirectories(exportPath);
