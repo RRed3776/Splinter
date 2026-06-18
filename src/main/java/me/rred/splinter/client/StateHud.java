@@ -10,7 +10,7 @@ public class StateHud {
     private static boolean hintConsumed = false;
     public static void render(MatrixStack matrixStack, TextRenderer textRenderer) {
         String setsOpenBind = KeyInputHandler.GUI_SETS_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
-        String setsHintText = "enter sets gui with \"" + setsOpenBind + "\"";
+        String setsHintText = "enter sets gui with \" " + setsOpenBind + " \"";
         if (!hintConsumed) {
             textRenderer.drawWithShadow(matrixStack, setsHintText, 10, 24, 0xFFEE00);
         }

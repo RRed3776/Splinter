@@ -237,8 +237,8 @@ public class SetsScreen extends Screen {
                 () -> {
                     String keybind = KeyInputHandler.TOGGLE_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
                     List<String> messages = new ArrayList<>();
-                    messages.add("enter idle mode by pressing the \\\"■\\\" symbol");
-                    messages.add("enter edit mode with " + "\"" + keybind + "\"");
+                    messages.add("enter idle mode by pressing the \"■\" symbol");
+                    messages.add("enter edit mode with " + "\" " + keybind + " \"");
                     messages.add("Shift + Right Mouse to quick display a set");
 
                     activeModal = new ConfirmModal(messages, () -> {

@@ -22,7 +22,7 @@ public class CsvExport {
     private static final String DELIMITER = ",";
 
     public static void export(List<SplinterSet> sets, Path out) throws IOException {
-        String headers = "Set_Name,Time"; // for now just hardcode this since there's only one type of file to export
+        String headers = "Set,Time"; // for now just hardcode this since there's only one type of file to export
 
         try (BufferedWriter bw = Files.newBufferedWriter(out, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)){
             // write header, create if not made already
@@ -31,7 +31,7 @@ public class CsvExport {
             // write rows
             for (SplinterSet set : sets) {
                 // https://stackoverflow.com/a/74084615 following this for formatting
-                String nameEntry = set.getName().replace(" ", "_");
+                String nameEntry = set.getName().trim();
 
                 for (Long time : set.getTimes()) {
                     String timeEntry = TimerFormatter.formatSeconds(time);
