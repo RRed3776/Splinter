@@ -1,5 +1,6 @@
-package me.rred.splinter.client;
+package me.rred.splinter.client.rendering;
 
+import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.edit.gui.EditHud;
 import me.rred.splinter.client.keyboard.KeyInputHandler;

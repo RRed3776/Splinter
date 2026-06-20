@@ -1,6 +1,6 @@
 package me.rred.splinter.client.keyboard;
 
-import me.rred.splinter.client.StateHud;
+import me.rred.splinter.client.rendering.StateHud;
 import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.SplinterStateMachine;

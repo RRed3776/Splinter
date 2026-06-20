@@ -1,8 +1,6 @@
 package me.rred.splinter.client.mixin;
 
-import me.rred.splinter.client.StateHud;
-import me.rred.splinter.client.edit.EditSession;
-import me.rred.splinter.client.SplinterClient;
+import me.rred.splinter.client.rendering.StateHud;
 import me.rred.splinter.client.timer.TimerHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

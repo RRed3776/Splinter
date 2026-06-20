@@ -8,8 +8,7 @@ import me.rred.splinter.client.sets.gui.SetsScreen;
 import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
-import me.rred.splinter.client.widgets.modals.InputModal;
-import me.rred.splinter.export.CsvExport;
+import me.rred.splinter.CsvExport;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -343,7 +342,7 @@ public class ExportScreen extends Screen {
     private int countTSFileAmount(String timestamp, List<String> names) {
         int count = 0;
         for (String name : names) {
-            // only capture thte timestamp between splinter_export_ and _(n)
+            // only capture the timestamp between splinter_export_ and _(n)
             String nameTimestamp = name.substring(16, 26);
             if (nameTimestamp.equals(timestamp)) {
                 count++;

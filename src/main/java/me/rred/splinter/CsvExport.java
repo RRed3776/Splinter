@@ -1,17 +1,13 @@
-package me.rred.splinter.export;
+package me.rred.splinter;
 
-import com.ibm.icu.impl.number.range.StandardPluralRanges;
-import me.rred.splinter.Splinter;
 import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.TimerFormatter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.List;
 
 // referencing https://javabook.mccue.dev/files/write_to_a_file

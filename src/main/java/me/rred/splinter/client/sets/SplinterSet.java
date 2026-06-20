@@ -1,5 +1,6 @@
 package me.rred.splinter.client.sets;
 
+import com.mojang.serialization.Codec;
 import me.rred.splinter.client.routing.Route;
 
 import java.util.ArrayList;
@@ -87,5 +88,4 @@ public class SplinterSet {
         // sets with the same name will be treated as the same set.
         return this.getName().equals(other.getName());
     }
-
 }
