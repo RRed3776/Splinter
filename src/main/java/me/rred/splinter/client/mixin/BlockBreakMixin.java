@@ -14,7 +14,7 @@ public class BlockBreakMixin {
     @Inject(method = "updateListeners", at = @At("HEAD"))
     public void onBlockUpdate(BlockPos pos, BlockState oldState, BlockState newState, int flags, CallbackInfo ci) {
         if (newState.isAir() && !oldState.isAir()) {
-            SplinterClient.routeHandler.onBlockBroken(pos);
+            SplinterClient.routeEngine.onBlockBroken(pos);
         }
     }
 }

@@ -9,12 +9,10 @@ import java.util.List;
 public class SplinterSet {
     private String name;
     private List<Long> times = new ArrayList<>(); // for now, data will just be non-persistent
-    private final boolean isGeneral;
     private Route route;
 
-    public SplinterSet(String name, boolean isGeneral, Route route) {
+    public SplinterSet(String name, Route route) {
         this.name = name;
-        this.isGeneral = isGeneral;
         this.route = route;
     }
 
@@ -69,10 +67,6 @@ public class SplinterSet {
 
     public boolean isEmpty() {
         return times.isEmpty();
-    }
-
-    public boolean isGeneral() {
-        return isGeneral;
     }
 
     public Route getRoute() {

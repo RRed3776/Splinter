@@ -24,7 +24,7 @@ public class SplinterStateMachine {
     public void setActive() {
         if (state == State.IDLE) {
             state = State.ACTIVE;
-            SplinterClient.routeHandler.resetFired();
+            SplinterClient.routeEngine.resetFired();
             // begin listening for events
         }
         // eventually allow active -> edit possibly

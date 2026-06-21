@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.awt.*;
 
-public class RouteHandler {
+public class RouteEngine {
     boolean startFired = false;
     boolean endFired = false;
     private boolean initialized = false;

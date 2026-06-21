@@ -1,7 +1,8 @@
 package me.rred.splinter.client;
 
-import me.rred.splinter.client.routing.RouteHandler;
+import me.rred.splinter.client.routing.RouteEngine;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
+import me.rred.splinter.client.routing.RouteRegistry;
 import me.rred.splinter.client.sets.SetManager;
 import me.rred.splinter.client.timer.SplinterTimer;
 import net.fabricmc.api.ClientModInitializer;
@@ -10,8 +11,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 public class SplinterClient implements ClientModInitializer {
     public static SplinterTimer timer = new SplinterTimer();
     public static SplinterStateMachine ssm = new SplinterStateMachine();
+    public static RouteRegistry routeRegistry = new RouteRegistry();
     public static SetManager setManager = new SetManager();
-    public static RouteHandler routeHandler = new RouteHandler();
+    public static RouteEngine routeEngine = new RouteEngine();
 
     @Override
     public void onInitializeClient() {
@@ -20,7 +22,7 @@ public class SplinterClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null || client.world == null) return;
             SplinterClient.timer.tick();
-            routeHandler.tick();
+            routeEngine.tick();
         });
     }
 }

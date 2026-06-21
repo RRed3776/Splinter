@@ -69,7 +69,7 @@ public class KeyInputHandler {
 
         KeyBind[] keyBinds = new KeyBind[] {
                 // bastion helper uses O I P K G
-                new KeyBind(TOGGLE_TIMER, GLFW.GLFW_KEY_SEMICOLON, SplinterClient.routeHandler::toggleTimer),
+                new KeyBind(TOGGLE_TIMER, GLFW.GLFW_KEY_SEMICOLON, SplinterClient.routeEngine::toggleTimer),
 
                 GUI_SETS_BIND,
                 GUI_EDIT_BIND,

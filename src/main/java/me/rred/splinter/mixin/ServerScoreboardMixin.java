@@ -1,6 +1,5 @@
 package me.rred.splinter.mixin;
 
-import me.rred.splinter.Splinter;
 import me.rred.splinter.client.SplinterClient;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -17,7 +16,7 @@ public class ServerScoreboardMixin {
         if (!score.getPlayerName().equals("tick")) return;
 
         int value = score.getScore();
-        SplinterClient.routeHandler.onMapTickUpdated(value);
+        SplinterClient.routeEngine.onMapTickUpdated(value);
 
         boolean inMap = value > 0;
         if (inMap != SplinterClient.ssm.isInMap()) {

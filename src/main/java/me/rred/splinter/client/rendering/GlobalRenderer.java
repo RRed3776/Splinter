@@ -34,7 +34,7 @@ public class GlobalRenderer {
         GlStateManager.disableDepthTest();
         GlStateManager.disableCull();
 
-        SplinterClient.routeHandler.render();
+        SplinterClient.routeEngine.render();
 
         if (SplinterClient.ssm.getState() == SplinterStateMachine.State.EDIT) {
             EditSession session = SplinterClient.ssm.getEditSession();

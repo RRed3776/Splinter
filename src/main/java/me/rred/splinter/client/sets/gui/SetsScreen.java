@@ -1,6 +1,5 @@
 package me.rred.splinter.client.sets.gui;
 
-import me.rred.splinter.Splinter;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.routing.Route;
@@ -106,7 +105,7 @@ public class SetsScreen extends Screen {
                                 }
                                 else if (SplinterClient.timer.isRunning()) {
                                     // timer is running, invalidate the run then switch
-                                    SplinterClient.routeHandler.invalidateRun();
+                                    SplinterClient.routeEngine.invalidateRun();
                                     SplinterClient.setManager.setActiveSet(set);
                                 }
                                 else {

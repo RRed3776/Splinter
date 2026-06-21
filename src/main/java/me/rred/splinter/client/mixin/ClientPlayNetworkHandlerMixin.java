@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientPlayNetworkHandlerMixin {
     @Inject(method = "onGameJoin", at = @At("TAIL"))
     private void onWorldJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
-        SplinterClient.routeHandler.onWorldJoin();
+        SplinterClient.routeEngine.onWorldJoin();
         SplinterUpdateChecker.check();
     }
 }

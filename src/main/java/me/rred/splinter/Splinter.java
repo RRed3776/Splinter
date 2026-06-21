@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Splinter implements ModInitializer {
 	public static final String MOD_ID = "splinter";
+	public static SplinterDataManager sdm = new SplinterDataManager();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.

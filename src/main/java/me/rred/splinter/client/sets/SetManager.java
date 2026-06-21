@@ -13,7 +13,7 @@ public class SetManager {
 
 
     public SetManager() {
-         SplinterSet generalSet = new SplinterSet("general", true, new Route());
+         SplinterSet generalSet = new SplinterSet("general", new Route());
          sets.add(generalSet);
          activeSet = generalSet;
          displayedSetA = generalSet;
@@ -25,7 +25,7 @@ public class SetManager {
 
     public void createSet(String name) {
         if (sets.size() >= 20) return; // arbitrary cap of 20 for now
-        SplinterSet newSet = new SplinterSet(name, false, new Route());
+        SplinterSet newSet = new SplinterSet(name, new Route());
         sets.add(newSet);
     }
     public void addSet(SplinterSet set) {
