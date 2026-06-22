@@ -1,5 +1,6 @@
 package me.rred.splinter.client.sets;
 
+import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.routing.Route;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ public class SetManager {
 
 
     public SetManager() {
-         SplinterSet generalSet = new SplinterSet("general", new Route());
+         Route defaultRoute = SplinterClient.routeRegistry.getDefaultRoute();
+         SplinterSet generalSet = new SplinterSet("general", defaultRoute);
          sets.add(generalSet);
          activeSet = generalSet;
          displayedSetA = generalSet;
@@ -25,7 +27,8 @@ public class SetManager {
 
     public void createSet(String name) {
         if (sets.size() >= 20) return; // arbitrary cap of 20 for now
-        SplinterSet newSet = new SplinterSet(name, new Route());
+        Route defaultRoute = SplinterClient.routeRegistry.getDefaultRoute();
+        SplinterSet newSet = new SplinterSet(name, defaultRoute);
         sets.add(newSet);
     }
     public void addSet(SplinterSet set) {

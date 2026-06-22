@@ -144,7 +144,7 @@ public class SetsScreen extends Screen {
                                                     if (name == null || name.isEmpty()) {
                                                         im.setPopUp(false);
                                                     }
-                                                    else if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                                                    else if (sets.contains(new SplinterSet(name, new Route()))) {
                                                         im.setPopUp(true);
                                                     } else {
                                                         set.renameSet(name);
@@ -167,7 +167,7 @@ public class SetsScreen extends Screen {
                                             activeModal.openModal(width, height);
                                         }, SplinterColors.TEXT, !set.isEmpty()),
                                         new ContextMenu.Option("Duplicate", () -> {
-                                            SplinterSet duplicate = new SplinterSet("Copy of " + set.getName(), false, new Route(set.getRoute()));
+                                            SplinterSet duplicate = new SplinterSet("Copy of " + set.getName(), set.getRoute());
                                             SplinterClient.setManager.addSet(duplicate);
                                             init();
                                             },
@@ -203,7 +203,7 @@ public class SetsScreen extends Screen {
                             if (name == null || name.isEmpty()) {
                                 im.setPopUp(false);
                             }
-                            else if (sets.contains(new SplinterSet(name, false, new Route()))) {
+                            else if (sets.contains(new SplinterSet(name, new Route()))) {
                                 im.setPopUp(true);
                             } else {
                                 SplinterClient.setManager.createSet(name);

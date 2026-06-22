@@ -73,6 +73,10 @@ public class SplinterSet {
         return route;
     }
 
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

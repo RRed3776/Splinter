@@ -9,16 +9,22 @@ public class Route {
     private Trigger startTrigger;
     private Trigger endTrigger;
 
+    public Route() {
+        startTrigger = new MapTrigger(Trigger.TriggerSlot.START);
+        endTrigger = new MapTrigger(Trigger.TriggerSlot.END);
+        name = "default";
+    }
+
     public Route(Route other) {
         this.startTrigger = other.startTrigger.copy();
         this.endTrigger = other.endTrigger.copy();
         this.name = other.name;
     }
 
-    public Route() {
-        startTrigger = new MapTrigger(Trigger.TriggerSlot.START);
-        endTrigger = new MapTrigger(Trigger.TriggerSlot.END);
-        name = "default";
+    public Route(Trigger start, Trigger end, String name) {
+        this.startTrigger = start;
+        this.endTrigger = end;
+        this.name = name;
     }
 
     public Trigger getStartTrigger() {
@@ -53,4 +59,7 @@ public class Route {
         return this.getName().equals(other.getName());
     }
 
+    public boolean nameEquals(String name) {
+        return this.name.equals(name);
+    }
 }
