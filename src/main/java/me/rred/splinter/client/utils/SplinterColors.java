@@ -14,16 +14,8 @@ public class SplinterColors {
     public static int LAVENDER_GRAY = 0xFFC8CCD8;
 
     // export colors
-    public static int TEAL = 0xFF2DD4A0;
-    public static int TEAL_MUTED = 0xFF3DB899;
-    public static int TEAL_SOFT     = 0xFF2DD4B8;
     public static int TEAL_DEEP     = 0xFF00B89C;
     // active state
-    public static int LIME = 0xFF55FF55;
-    public static int LIME_SOFT    = 0xFF7EC850;
-    public static int LIME_PASTEL  = 0xFFB4E075;
-    public static int LIME_BRIGHT  = 0xFF90F040;
-    public static int LIME_COOL    = 0xFF86E05A;
     public static int LIME_MUTED   = 0xFF6DB84A;
 
     // default screen colors
@@ -41,6 +33,8 @@ public class SplinterColors {
     public static int MIDDLE_PANEL = LIGHT_GRAY;
     public static int TOP_PANEL = CHARCOAL_BLUE;
     public static int CONTEXT_MENU = CHARCOAL;
+    public static int MENU_BAR = CHARCOAL_BLUE;
+
 
 
     public static int alpha(int color, int alpha) {
