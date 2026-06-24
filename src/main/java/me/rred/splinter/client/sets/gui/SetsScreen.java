@@ -36,7 +36,7 @@ public class SetsScreen extends Screen {
     private int headerTextY;
     private final int headerHeight = 20;
     private final int menuBarHeight = 15;
-    private int headerButtonLen;
+    private int exitScalar;
     private SplinterSet setA;
     private SplinterSet setB;
     private static final int textColor = SplinterColors.TEXT;
@@ -46,6 +46,7 @@ public class SetsScreen extends Screen {
     private TimesListPanel timesListPanelA;
     private TimesListPanel timesListPanelB;
     private ContextMenu contextMenu = new ContextMenu();
+    private ScreenMenu screenMenu = new ScreenMenu();
     private final int borderWidth = 1;
     private final int[] partitions = new int[5];
     private int partitionWidth;
@@ -199,9 +200,26 @@ public class SetsScreen extends Screen {
 
         // initialize buttons
 
-        int buttonHeight = 20;
+        int buttonLen = 20;
 
-        addButton(new SplinterButton(screenLeft, screenTop, partitionWidth, buttonHeight,
+        // open screens menu
+        addButton(new SplinterButton(screenLeft, screenTop, buttonLen, buttonLen,
+                new LiteralText("☰"),
+                () -> {
+                    screenMenu.open(screenLeft, screenTop + buttonLen + borderWidth, partitionWidth, List.of(
+                            new ContextMenu.Option("Routes Menu", () -> {
+                                init();
+                            }, SplinterColors.TEXT,
+                                    true),
+                            new ContextMenu.Option("Export Sets", () -> {
+                                init();
+                            }, SplinterColors.TEXT,
+                                    true)
+                    ));
+                }
+        ));
+
+        addButton(new SplinterButton(screenLeft + buttonLen, screenTop, partitionWidth - buttonLen, buttonLen,
                 new LiteralText("NEW SET"),
                 () -> {
                     activeModal = new InputModal("Choose Set Name", () -> {
@@ -261,27 +279,26 @@ public class SetsScreen extends Screen {
 
         // should replace this logic with the active checking later
         // dynamic header buttons to clear the specified displayed set
-        int headerWidth = partitionWidth;
-        headerButtonLen = 20;
-        int startX = screenLeft + partitionWidth;
+        exitScalar = 11;
+        int startX = screenLeft + partitionWidth + 3;
+        int exitButtonY = screenTop + (headerHeight - exitScalar) / 2;
 
-        if (setA != null) {
-            SplinterExitButton newButton = new SplinterExitButton(startX + borderWidth, screenTop, headerButtonLen,
-                     () -> {
-                         SplinterClient.setManager.clearDisplayedSetA();
-                         init();
-                     });
-            exitButtons.add(newButton);
-        }
+        exitButtons.clear();
+        SplinterExitButton exitButtonA = new SplinterExitButton(startX + borderWidth, exitButtonY, exitScalar,
+                 () -> {
+                     SplinterClient.setManager.clearDisplayedSetA();
+                     init();
+                 });
+        exitButtonA.visible = setA != null;
+        exitButtons.add(exitButtonA);
 
-        if (setB != null) {
-            SplinterExitButton newButton = new SplinterExitButton(startX + borderWidth, screenTop, headerButtonLen,
-                    () -> {
-                        SplinterClient.setManager.clearDisplayedSetB();
-                        init();
-                    });
-            exitButtons.add(newButton);
-        }
+        SplinterExitButton exitButtonB = new SplinterExitButton(startX + borderWidth + partitionWidth, exitButtonY, exitScalar,
+                () -> {
+                    SplinterClient.setManager.clearDisplayedSetB();
+                    init();
+                });
+        exitButtonB.visible = setB != null;
+        exitButtons.add(exitButtonB);
     }
 
     @Override
@@ -295,9 +312,9 @@ public class SetsScreen extends Screen {
         fill(matrixStack, screenLeft, screenTop, screenRight, headerBottom, topPanelColor);
         // headers
         headerTextY = screenTop + (headerHeight - textRenderer.fontHeight + 1) / 2;
-        int setAX = partitions[1] + headerButtonLen + 3;
+        int setAX = partitions[1] + exitScalar + 6;
         int setBX = setAX + partitionWidth;
-        int headerWidth = partitionWidth - headerButtonLen - 6;
+        int headerWidth = partitionWidth - exitScalar - 9;
         int headersBorderColor = SplinterColors.BORDER_OTHER;
         fill(matrixStack, screenLeft, headerBottom, screenRight,headerBottom + borderWidth, headersBorderColor);
 
@@ -323,9 +340,9 @@ public class SetsScreen extends Screen {
 
         // vertical borders between columns
         int verticalBorderColor = SplinterColors.BORDER;
-        fill(matrixStack, partitions[1] - borderWidth, listTop, partitions[1], listBottom, verticalBorderColor);
-        fill(matrixStack, partitions[2] - borderWidth, listTop, partitions[2], listBottom, verticalBorderColor);
-        fill(matrixStack, partitions[3] - borderWidth, listTop, partitions[3], listBottom, verticalBorderColor);
+        fill(matrixStack, partitions[1] - borderWidth, screenTop, partitions[1], listBottom, verticalBorderColor);
+        fill(matrixStack, partitions[2] - borderWidth, screenTop, partitions[2], listBottom, verticalBorderColor);
+        fill(matrixStack, partitions[3] - borderWidth, screenTop, partitions[3], listBottom, verticalBorderColor);
 
         if (setA != null) {
             textRenderer.drawWithShadow(matrixStack,
@@ -346,7 +363,7 @@ public class SetsScreen extends Screen {
         int scissorHeight = listBottom - listTop;
 
         ScissorUtil.enable(scale, screenLeft, menuBarBottom + borderWidth, scissorWidth, scissorHeight);
-        boolean showSetsHover = !contextMenu.isVisible();
+        boolean showSetsHover = !contextMenu.isVisible() && !screenMenu.isVisible();
         setsListPanel.render(matrixStack, textRenderer, mouseX, mouseY, showSetsHover);
         timesListPanelA.render(matrixStack, textRenderer, mouseX, mouseY, false);
         timesListPanelB.render(matrixStack, textRenderer, mouseX, mouseY, false);
@@ -355,6 +372,11 @@ public class SetsScreen extends Screen {
         // render context menu
         if (contextMenu.isVisible()) {
             contextMenu.render(matrixStack, textRenderer, mouseX, mouseY);
+        }
+
+        // render screen menu
+        if (screenMenu.isVisible()) {
+            screenMenu.render(matrixStack, textRenderer, mouseX, mouseY);
         }
 
         // render stats and overlays
@@ -401,8 +423,14 @@ public class SetsScreen extends Screen {
 
         if (activeModal != null) {
             boolean pressed = activeModal.handleClick(mouseX, mouseY, button);
-            if (activeModal != null && !activeModal.isVisible()) activeModal = null;
+                if (activeModal != null && !activeModal.isVisible()) activeModal = null;
             return pressed;
+        }
+
+        if (screenMenu.isVisible()) {
+            if (screenMenu.handleClick(mouseX, mouseY)) return true;
+            screenMenu.close();
+            return true;
         }
 
         // context menu gets priority over setlist
@@ -410,6 +438,10 @@ public class SetsScreen extends Screen {
             if (contextMenu.handleClick(mouseX, mouseY)) return true;
             contextMenu.close();
             return true;
+        }
+
+        for (SplinterExitButton exitButton : exitButtons) {
+            if (exitButton != null && exitButton.handleClick(mouseX, mouseY, button)) return true;
         }
 
         if(setsListPanel.handleClick(mouseX, mouseY, button)) return true;

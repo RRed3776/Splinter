@@ -43,6 +43,7 @@ public class SplinterExitButton extends AbstractSplinterHoverButton {
     public boolean handleClick(double mouseX, double mouseY, int button) {
         if (!hovered || !visible) return false;
         if (button == 0) {
+            visible = false;
             onPress();
             return true;
         }
