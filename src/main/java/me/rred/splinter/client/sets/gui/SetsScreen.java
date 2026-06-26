@@ -3,6 +3,7 @@ package me.rred.splinter.client.sets.gui;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.routing.Route;
+import me.rred.splinter.client.routing.gui.RoutesScreen;
 import me.rred.splinter.client.sets.gui.exports.ExportScreen;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
@@ -208,11 +209,13 @@ public class SetsScreen extends Screen {
                 () -> {
                     screenMenu.open(screenLeft, screenTop + buttonLen + borderWidth, partitionWidth, List.of(
                             new ContextMenu.Option("Routes Menu", () -> {
-                                init();
+                                SetsScreen.toggle();
+                                RoutesScreen.toggle();
                             }, SplinterColors.TEXT,
                                     true),
                             new ContextMenu.Option("Export Sets", () -> {
-                                init();
+                                SetsScreen.toggle();
+                                ExportScreen.toggle();
                             }, SplinterColors.TEXT,
                                     true)
                     ));
@@ -249,7 +252,6 @@ public class SetsScreen extends Screen {
         addButton(new SplinterButton(partitions[3] + 5, screenBottom - exportButtonHeight - 5, partitionWidth, exportButtonHeight,
                 new LiteralText("EXPORT DATA"),
                 () -> {
-                    boolean hasTime = false;
                     SetsScreen.toggle();
                     ExportScreen.toggle();
                 }
