@@ -12,9 +12,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 public class SetsListPanel extends ListPanel {
-    private List<SplinterSet> sets;
-    private BiConsumer<SplinterSet, Integer> onClick;
-    private boolean isHovered = false;
+    private final List<SplinterSet> sets;
+    private final BiConsumer<SplinterSet, Integer> onClick;
     private int hoveredIndex = -1;
     private int hoveredPauseIndex = -1;
 
@@ -43,7 +42,7 @@ public class SetsListPanel extends ListPanel {
             if (itemY + LINE_HEIGHT < y || itemY > y + height) continue; // skip off-screen lines
 
             boolean isActive = set == activeSet;
-            isHovered = (
+            boolean isHovered = (
                 showHover &&
                 mouseX >= x && mouseX <= x + width &&
                 mouseY >= itemY && mouseY <= itemY + LINE_HEIGHT
@@ -74,10 +73,6 @@ public class SetsListPanel extends ListPanel {
 
             int textY = itemY + (ITEM_HEIGHT - textRenderer.fontHeight ) / 2;
             int textColor = isActive ? 0xAAFFAA : 0xFFFFFF;
-//            if (set.isGeneral()) {
-//                DrawableHelper.fill(matrixStack, x, itemY, x + 1, itemY + LINE_HEIGHT, 0xFF5599FF);
-//                textColor = isActive ? 0xAADDFF : 0xAABBFF;
-//            }
             int textWidth = (pauseX) - (x + 3);
             textRenderer.drawWithShadow(matrixStack,
                     TruncateText.truncate(setName, textWidth, textRenderer),
@@ -101,7 +96,6 @@ public class SetsListPanel extends ListPanel {
                     DrawableHelper.fill(matrixStack, pauseX, pauseY, pauseX + pauseSize, pauseY + pauseSize, 0x80FFFFFF);
                 }
                 textRenderer.draw(matrixStack, buttonLabel , pauseTextX, pauseTextY, pauseColor);
-
             }
         }
     }

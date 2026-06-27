@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 public class ExportSetsListPanel extends ListPanel {
-    private List<SplinterSet> sets;
+    private final List<SplinterSet> sets;
     private List<SplinterSet> exportSets;
-    private BiConsumer<SplinterSet, Integer> onClick;
-    private boolean isHovered = false;
+    private final BiConsumer<SplinterSet, Integer> onClick;
     private int hoveredIndex = -1;
 
-    public ExportSetsListPanel(int x, int y, int width, int height, List<SplinterSet> sets, BiConsumer<SplinterSet, Integer> onClick) {
+    public ExportSetsListPanel(int x, int y, int width, int height,
+                               List<SplinterSet> sets, BiConsumer<SplinterSet, Integer> onClick) {
         super(x, y, width, height);
         this.sets = sets;
         this.onClick = onClick;
@@ -30,7 +30,8 @@ public class ExportSetsListPanel extends ListPanel {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, TextRenderer textRenderer, int mouseX, int mouseY, boolean showHover) {
+    public void render(MatrixStack matrixStack, TextRenderer textRenderer,
+                       int mouseX, int mouseY, boolean showHover) {
         if (getItemCount() == 0) {
             String text = "No Data!";
             int textX = x + (width - textRenderer.getWidth(text)) / 2;
@@ -47,7 +48,7 @@ public class ExportSetsListPanel extends ListPanel {
             int itemY = y + (i * LINE_HEIGHT) - scrollOffset + i + 1;
             if (itemY + LINE_HEIGHT < y || itemY > y + height) continue; // skip off-screen lines
 
-            isHovered = (
+            boolean isHovered = (
                     showHover &&
                             mouseX >= x && mouseX <= x + width &&
                             mouseY >= itemY && mouseY <= itemY + LINE_HEIGHT

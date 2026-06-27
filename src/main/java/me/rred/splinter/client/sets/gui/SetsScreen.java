@@ -32,11 +32,9 @@ public class SetsScreen extends Screen {
     // main screen fields
     private int screenTop, screenBottom, screenLeft, screenRight;
     private int headerBottom;
-    private int menuBarTop, menuBarBottom;
     private int listTop, listBottom;
     private int headerTextY;
     private final int headerHeight = 20;
-    private final int menuBarHeight = 15;
     private int exitScalar;
     private SplinterSet setA;
     private SplinterSet setB;
@@ -146,6 +144,9 @@ public class SetsScreen extends Screen {
                                             init();
                                         }, SplinterColors.TEXT,
                                                 SplinterClient.setManager.getDisplayedSetB() != set),
+                                        new ContextMenu.Option("Edit Route", () -> {
+                                            init();
+                                        }, SplinterColors.TEXT, true),
                                         new ContextMenu.Option("Rename", () -> {
                                             activeModal = new InputModal("Rename Set", () -> {
                                                 if(activeModal instanceof InputModal im) {
@@ -364,7 +365,7 @@ public class SetsScreen extends Screen {
         int scissorWidth = screenRight - screenLeft;
         int scissorHeight = listBottom - listTop;
 
-        ScissorUtil.enable(scale, screenLeft, menuBarBottom + borderWidth, scissorWidth, scissorHeight);
+        ScissorUtil.enable(scale, screenLeft, headerBottom + borderWidth, scissorWidth, scissorHeight);
         boolean showSetsHover = !contextMenu.isVisible() && !screenMenu.isVisible();
         setsListPanel.render(matrixStack, textRenderer, mouseX, mouseY, showSetsHover);
         timesListPanelA.render(matrixStack, textRenderer, mouseX, mouseY, false);
