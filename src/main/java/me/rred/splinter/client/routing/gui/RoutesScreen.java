@@ -1,17 +1,22 @@
 package me.rred.splinter.client.routing.gui;
 
 import me.rred.splinter.client.SplinterClient;
+import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.routing.Route;
 import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.sets.gui.SetsScreen;
 import me.rred.splinter.client.sets.gui.exports.ExportScreen;
+import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
+import me.rred.splinter.client.widgets.modals.InputModal;
+import me.rred.splinter.client.widgets.modals.SplinterModal;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +29,12 @@ public class RoutesScreen extends Screen {
     private final int borderWidth = 1;
     private static final int textColor = SplinterColors.TEXT;
     private final int headerHeight = 20;
+    private RoutesListPanel routesListPanel;
+    private SplinterModal activeModal;
+    private SplinterButton renameButton;
 
     private List<Route> routes = new ArrayList<>();
+    private Route selectedRoute = null;
     private SplinterSet set = null;
 
     public RoutesScreen() {
@@ -59,14 +68,57 @@ public class RoutesScreen extends Screen {
         headersBottom = screenTop + headerHeight;
         listTop = headersBottom + borderWidth;
 
-        int cancelX = screenRight - buttonWidth - 5;
+        int listHeight = screenBottom - listTop;
+        routesListPanel = new RoutesListPanel(screenLeft, listTop - borderWidth, partitionWidth, listHeight, routes,
+                (route, button) -> {
+                    if (button == 0 || button == 1) {
+                        if (selectedRoute == route) {
+                            selectedRoute = null;
+                        } else {
+                            selectedRoute = route;
+                        }
+                        routesListPanel.updateSelectedRoute(selectedRoute);
+                    }
+                }
+        );
+        routesListPanel.updateSelectedRoute(selectedRoute);
+
+        int buttonsX = screenRight - buttonWidth - 5;
+        int cancelY = screenBottom - buttonHeight - 5;
+
         // return to sets screen
-        addButton(new SplinterButton(cancelX, screenBottom - buttonHeight - 5, buttonWidth, buttonHeight,
+        addButton(new SplinterButton(buttonsX, cancelY, buttonWidth, buttonHeight,
                 new LiteralText("EXIT"),
                 () -> {
                     // close this screen, open Sets Screen
                     RoutesScreen.toggle();
                     SetsScreen.toggle();
+                }
+        ));
+
+        int renameY = cancelY - buttonHeight - 5;
+        addButton(renameButton = new SplinterButton(buttonsX, renameY, buttonWidth, buttonHeight,
+            new LiteralText("RENAME"),
+                () -> {
+                    activeModal = new InputModal("Rename Route", () -> {
+                        if(activeModal instanceof InputModal im) {
+                            String name = im.getTextInput();
+                            if (name == null || name.isEmpty()) {
+                                im.setPopUp(false);
+                            }
+                            else if (routes.contains(new Route(name))) {
+                                im.setPopUp(true);
+                            } else {
+                                selectedRoute.setName(name);
+                                activeModal.closeGuard = false;
+                                activeModal = null;
+                                init();
+                            }
+                        }
+                    });
+                    String routeName = selectedRoute.getName();
+                    activeModal.setSubmessage(routeName);
+                    activeModal.openModal(width, height);
                 }
         ));
     }
@@ -107,14 +159,71 @@ public class RoutesScreen extends Screen {
         int headerX2 = partitions[1] + 5;
         textRenderer.drawWithShadow(matrixStack, "Route Info", headerX2, headerTextY, textColor);
 
-        DrawableHelper.fill(matrixStack, screenLeft, headersBottom, screenRight,  listTop, headersBorderColor);
+        DrawableHelper.fill(matrixStack, screenLeft, headersBottom, screenRight, listTop, headersBorderColor);
 
         // sets list
         double scale = client.getWindow().getScaleFactor();
         int scissorWidth = screenRight - screenLeft;
-        int scissorHeight = screenBottom - listTop - borderWidth;
+        int scissorHeight = screenBottom - listTop;
+
+        ScissorUtil.enable(scale, screenLeft, listTop, scissorWidth, scissorHeight);
+        routesListPanel.render(matrixStack, textRenderer, mouseX, mouseY, true);
+        ScissorUtil.disable();
+
+        if (activeModal != null && selectedRoute != null) {
+            activeModal.render(matrixStack, textRenderer, mouseX, mouseY);
+        }
+
+        renameButton.active = selectedRoute != null;
 
         super.render(matrixStack, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (routesListPanel.isMouseOver(mouseX, mouseY)) {
+            routesListPanel.scroll(amount);
+            return true;
+        }
+
+        return super.mouseScrolled(mouseX, mouseY, amount);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (activeModal != null) {
+            boolean pressed = activeModal.handleClick(mouseX, mouseY, button);
+            if (activeModal != null && !activeModal.isVisible()) activeModal = null;
+            return pressed;
+        }
+
+        if(routesListPanel.handleClick(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // pass input to activeModal
+        if (activeModal != null) {
+            boolean pressed = activeModal.keyPressed(keyCode, scanCode, modifiers);
+            if (!activeModal.isVisible()) activeModal = null;
+            return pressed;
+        }
+        // leave screen with Esc or specified hotkey
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || KeyInputHandler.GUI_SETS_BIND.getKeyBinding().matchesKey(keyCode, scanCode)) {
+            ExportScreen.toggle();
+            SetsScreen.toggle();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int keyCode) {
+        if (activeModal != null) return activeModal.charTyped(chr, keyCode);
+        return super.charTyped(chr, keyCode);
     }
 
     public void selectSet(SplinterSet set) {
@@ -130,5 +239,9 @@ public class RoutesScreen extends Screen {
         else {
             client.openScreen(new RoutesScreen());
         }
+    }
+
+    public void renameRoute(String name) {
+        selectedRoute.setName(name);
     }
  }

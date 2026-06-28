@@ -95,6 +95,7 @@ public class ExportScreen extends Screen {
                     }
                 }
         );
+        setsListPanel.updateExportSets(exportSets);
 
         // deselect all export selections
         addButton(new SplinterButton(screenLeft, screenTop + tabHeight + borderWidth, buttonWidth, buttonHeight,
@@ -252,13 +253,13 @@ public class ExportScreen extends Screen {
         int scissorWidth = screenRight - screenLeft;
         int scissorHeight = screenBottom - listTop - borderWidth;
 
-        if (popUpActive) {
-            textRenderer.drawWithShadow(matrixStack, popUpText, headerX2, buttonsTop + 5, textColor);
-        }
-
         ScissorUtil.enable(scale, screenLeft, listTop + borderWidth, scissorWidth, scissorHeight);
         setsListPanel.render(matrixStack, textRenderer, mouseX, mouseY, true);
         ScissorUtil.disable();
+
+        if (popUpActive) {
+            textRenderer.drawWithShadow(matrixStack, popUpText, headerX2, buttonsTop + 5, textColor);
+        }
 
         // selected sets text
         // probably a better way to do this but I cbb and it seems complicated

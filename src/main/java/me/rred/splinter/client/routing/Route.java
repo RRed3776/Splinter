@@ -15,6 +15,12 @@ public class Route {
         name = "default";
     }
 
+    public Route(String name) {
+        startTrigger = new MapTrigger(Trigger.TriggerSlot.START);
+        endTrigger = new MapTrigger(Trigger.TriggerSlot.END);
+        this.name = name;
+    }
+
     public Route(Route other) {
         this.startTrigger = other.startTrigger.copy();
         this.endTrigger = other.endTrigger.copy();
