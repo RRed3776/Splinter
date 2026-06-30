@@ -1,6 +1,7 @@
 package me.rred.splinter.client.sets.gui;
 
 import me.rred.splinter.client.SplinterClient;
+import me.rred.splinter.client.SplinterStateMachine;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.routing.Route;
 import me.rred.splinter.client.routing.gui.RoutesScreen;
@@ -145,8 +146,9 @@ public class SetsScreen extends Screen {
                                         }, SplinterColors.TEXT,
                                                 SplinterClient.setManager.getDisplayedSetB() != set),
                                         new ContextMenu.Option("Edit Route", () -> {
-                                            init();
-                                        }, SplinterColors.TEXT, true),
+                                            SplinterClient.ssm.setEdit();
+                                            SetsScreen.toggle();
+                                        }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
                                         new ContextMenu.Option("Rename", () -> {
                                             activeModal = new InputModal("Rename Set", () -> {
                                                 if(activeModal instanceof InputModal im) {

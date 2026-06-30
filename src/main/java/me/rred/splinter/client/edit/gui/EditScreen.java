@@ -4,6 +4,8 @@ import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.routing.triggers.Trigger;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
+import me.rred.splinter.client.utils.SplinterColors;
+import me.rred.splinter.client.widgets.SplinterButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -17,10 +19,10 @@ public class EditScreen extends Screen {
     private int offset = 50;
     private EditSession editSession;
     private static final int textColor = 0xFFFFFF;
-    private int padding = 5;
+    private int borderWidth = 1;
 
-    private TriggerSlotButton startButton;
-    private TriggerSlotButton endButton;
+    private TriggerSlotButton mainButton;
+    private TriggerSlotButton subButton;
     private TriggerTypeDropdown startDropdown;
     private TriggerTypeDropdown endDropdown;
 
@@ -48,8 +50,8 @@ public class EditScreen extends Screen {
         int startY = (height - totalHeight) / 2 - 20;
         int endY = startY + btnLen + gap;
 
-        startButton = new TriggerSlotButton(startX, startY, btnLen, btnLen, Trigger.TriggerSlot.START);
-        endButton = new TriggerSlotButton(startX, endY, btnLen, btnLen, Trigger.TriggerSlot.END);
+        mainButton = new TriggerSlotButton(startX, startY, btnLen, btnLen, Trigger.TriggerSlot.START);
+        subButton = new TriggerSlotButton(startX, endY, btnLen, btnLen, Trigger.TriggerSlot.END);
 
         // dropdowns
         int dropdownX = startX + btnLen + gap;
@@ -88,12 +90,26 @@ public class EditScreen extends Screen {
         // GUI title
         drawCenteredText(matrixStack, textRenderer, title, width / 2, 10, textColor);
 
+        int middlePanelColor = SplinterColors.alpha(SplinterColors.MIDDLE_PANEL, 0xE0); // 88% opacity
+        fill(matrixStack, screenLeft, screenTop, screenRight, screenBottom, middlePanelColor);
+
+        // outer border, screen is inside the border
+        int outerBorderColor = SplinterColors.BORDER;
+        // top
+        fill(matrixStack, screenLeft - borderWidth, screenTop - borderWidth, screenRight + borderWidth, screenTop, outerBorderColor);
+        // bottom
+        fill(matrixStack, screenLeft - borderWidth, screenBottom, screenRight + borderWidth, screenBottom + borderWidth, outerBorderColor);
+        // left
+        fill(matrixStack, screenLeft - borderWidth, screenTop, screenLeft, screenBottom, outerBorderColor);
+        // right
+        fill(matrixStack, screenRight, screenTop, screenRight + borderWidth, screenBottom, outerBorderColor);
+
         // render slot buttons
         boolean startSelected = editSession.getActiveSlot() == Trigger.TriggerSlot.START;
         boolean endSelected = editSession.getActiveSlot() == Trigger.TriggerSlot.END;
 
-        startButton.render(matrixStack, textRenderer, mouseX, mouseY, startSelected);
-        endButton.render(matrixStack, textRenderer, mouseX, mouseY, endSelected);
+        mainButton.render(matrixStack, textRenderer, mouseX, mouseY, startSelected);
+        subButton.render(matrixStack, textRenderer, mouseX, mouseY, endSelected);
         Trigger.TriggerType activeType = editSession.getActiveType();
 
         if (editSession.getActiveSlot() == Trigger.TriggerSlot.START) {
@@ -112,11 +128,11 @@ public class EditScreen extends Screen {
         if (editSession.getActiveSlot() == Trigger.TriggerSlot.START && startDropdown.handleClick(mouseX, mouseY)) return true;
         if (editSession.getActiveSlot() == Trigger.TriggerSlot.END && endDropdown.handleClick(mouseX, mouseY)) return true;
 
-        if (startButton.handleClick(mouseX, mouseY)) {
+        if (mainButton.handleClick(mouseX, mouseY)) {
             editSession.setActiveSlot(Trigger.TriggerSlot.START);
             return true;
         }
-        if (endButton.handleClick(mouseX, mouseY)) {
+        if (subButton.handleClick(mouseX, mouseY)) {
             editSession.setActiveSlot(Trigger.TriggerSlot.END);
             return true;
         }
