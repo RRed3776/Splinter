@@ -4,6 +4,7 @@ import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.routing.triggers.Trigger;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
+import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
 import net.minecraft.client.MinecraftClient;
@@ -51,6 +52,7 @@ public class EditScreen extends Screen {
         int sliderHeight = height / 10;
         int sliderY = btnY - sliderHeight - (int)(btnHeight * 1.25);
         slider = new TriggerTypeSlider(sliderOffset, sliderY, sliderWidth, sliderHeight, editSession.getActiveType());
+        slider.setOnSelectionChanged(type -> editSession.setActiveType(type));
 
         // cancel button
         addButton(new SplinterButton(
@@ -123,6 +125,15 @@ public class EditScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (slider.isMouseOver(mouseX, mouseY)) {
+            slider.scroll(amount);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, amount);
+    }
+
     public static void toggle() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.currentScreen instanceof EditScreen) {
@@ -132,6 +143,4 @@ public class EditScreen extends Screen {
             if (edit != null) client.openScreen(new EditScreen(edit));
         }
     }
-
-
 }
