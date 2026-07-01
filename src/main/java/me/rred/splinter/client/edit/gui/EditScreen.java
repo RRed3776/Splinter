@@ -21,10 +21,7 @@ public class EditScreen extends Screen {
     private static final int textColor = 0xFFFFFF;
     private int borderWidth = 1;
 
-    private TriggerSlotButton mainButton;
-    private TriggerSlotButton subButton;
-    private TriggerTypeDropdown startDropdown;
-    private TriggerTypeDropdown endDropdown;
+    private TriggerTypeSlider slider;
 
     public EditScreen(EditSession editSession) {
         super(new LiteralText("Edit Route - " + SplinterClient.setManager.getActiveSet().getName()));
@@ -42,47 +39,43 @@ public class EditScreen extends Screen {
         screenLeft = offset;
         screenRight = width - offset;
 
-        // initialize slot buttons
-        int btnLen = 35;
-        int gap = 10;
-        int totalHeight = btnLen * 2 + gap;
-        int startX = width / 2 - 60;
-        int startY = (height - totalHeight) / 2 - 20;
-        int endY = startY + btnLen + gap;
+        int btnHeight = height / 12;
+        int btnY = screenBottom - (int)(btnHeight * 1.25);
+        int btnWidth = width / 6;
+        int totalBtnWidth = (int)(btnWidth * 3.5); // leave .25 between each button
+        int btnStartX = (width - totalBtnWidth) / 2;
 
-        mainButton = new TriggerSlotButton(startX, startY, btnLen, btnLen, Trigger.TriggerSlot.START);
-        subButton = new TriggerSlotButton(startX, endY, btnLen, btnLen, Trigger.TriggerSlot.END);
+        // TriggerType slider
+        int sliderOffset = width / 6;
+        int sliderWidth = width - sliderOffset * 2;
+        int sliderHeight = height / 10;
+        int sliderY = btnY - sliderHeight - (int)(btnHeight * 1.25);
+        slider = new TriggerTypeSlider(sliderOffset, sliderY, sliderWidth, sliderHeight, editSession.getActiveType());
 
-        // dropdowns
-        int dropdownX = startX + btnLen + gap;
-        Trigger.TriggerType activeType = editSession.getActiveType();
-        startDropdown = new TriggerTypeDropdown(dropdownX, startY,
-                activeType,
-                type -> editSession.setActiveSlot(Trigger.TriggerSlot.START, type));
-        endDropdown = new TriggerTypeDropdown(dropdownX, endY,
-                activeType,
-                type -> editSession.setActiveSlot(Trigger.TriggerSlot.END, type));
+        // cancel button
+        addButton(new SplinterButton(
+                btnStartX, btnY, btnWidth, btnHeight,
+                new LiteralText("CANCEL"),
+                editSession::cancel
+        ));
 
-        int confirmY = endY + btnLen + 8;
-        int btnWidth = 60;
-        int gap2 = 8;
-        int totalBtnWidth = btnWidth * 2 + gap2;
-        int btnCenterX = width / 2 - totalBtnWidth / 2;
+        // switch slot button
+        int btnStart2X = btnStartX + (int)(btnWidth * 0.25) + btnWidth;
+        addButton(new SplinterButton(
+                btnStart2X, btnY, btnWidth, btnHeight,
+                new LiteralText("SWITCH SLOT"),
+                editSession::toggleActiveSlot
 
+        ));
+        int btnStart3X = btnStart2X + (int)(btnWidth * 0.25) + btnWidth;
         // confirm button
         if (editSession.hasChanges()) {
-            addButton(new ButtonWidget(
-                    btnCenterX + btnWidth + gap2, confirmY, btnWidth, 20,
+            addButton(new SplinterButton(
+                    btnStart3X, btnY, btnWidth, btnHeight,
                     new LiteralText("CONFIRM"),
-                    button -> editSession.confirm()
+                    editSession::confirm
             ));
         }
-        // cancel button
-        addButton(new ButtonWidget(
-                btnCenterX, confirmY, btnWidth, 20,
-                new LiteralText("CANCEL"),
-                button -> editSession.cancel()
-        ));
     }
 
     @Override
@@ -104,39 +97,19 @@ public class EditScreen extends Screen {
         // right
         fill(matrixStack, screenRight, screenTop, screenRight + borderWidth, screenBottom, outerBorderColor);
 
-        // render slot buttons
-        boolean startSelected = editSession.getActiveSlot() == Trigger.TriggerSlot.START;
-        boolean endSelected = editSession.getActiveSlot() == Trigger.TriggerSlot.END;
+        // current active slot
+        String slotText = editSession.getActiveSlot() == Trigger.TriggerSlot.START ?
+                "Start" : "End";
+        int slotX = (width - textRenderer.getWidth(slotText)) / 2;
+        textRenderer.drawWithShadow(matrixStack, slotText, slotX, screenTop + 10, textColor);
 
-        mainButton.render(matrixStack, textRenderer, mouseX, mouseY, startSelected);
-        subButton.render(matrixStack, textRenderer, mouseX, mouseY, endSelected);
-        Trigger.TriggerType activeType = editSession.getActiveType();
-
-        if (editSession.getActiveSlot() == Trigger.TriggerSlot.START) {
-            startDropdown.setSelected(activeType);
-            startDropdown.render(matrixStack, textRenderer, mouseX, mouseY);
-        }
-        if (editSession.getActiveSlot() == Trigger.TriggerSlot.END) {
-            endDropdown.setSelected(activeType);
-            endDropdown.render(matrixStack, textRenderer, mouseX, mouseY);
-        }
+        // render slider
+        slider.render(matrixStack, textRenderer, mouseX, mouseY);
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (editSession.getActiveSlot() == Trigger.TriggerSlot.START && startDropdown.handleClick(mouseX, mouseY)) return true;
-        if (editSession.getActiveSlot() == Trigger.TriggerSlot.END && endDropdown.handleClick(mouseX, mouseY)) return true;
-
-        if (mainButton.handleClick(mouseX, mouseY)) {
-            editSession.setActiveSlot(Trigger.TriggerSlot.START);
-            return true;
-        }
-        if (subButton.handleClick(mouseX, mouseY)) {
-            editSession.setActiveSlot(Trigger.TriggerSlot.END);
-            return true;
-        }
-
         return super.mouseClicked(mouseX, mouseY, button);
     }
 

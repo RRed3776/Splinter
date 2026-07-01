@@ -39,6 +39,7 @@ public class EditSession {
         this.ogEnd = set.getRoute().getEndTrigger();
         this.pendingStart = ogStart;
         this.pendingEnd = ogEnd;
+        this.activeTrigger = pendingStart; // initially edit the start trigger
     }
 
     public void render(MatrixStack matrixStack, TextRenderer textRenderer) {
@@ -102,6 +103,10 @@ public class EditSession {
         oldActiveTrigger = tempTrigger;
     }
 
+    public void toggleActiveSlot() {
+        activeTrigger = getActiveSlot() == Trigger.TriggerSlot.START ? pendingEnd : pendingStart;
+    }
+
     public void setActiveType(Trigger.TriggerType type) {
         if (activeTrigger == null) return;
 //        if (getActiveSlot() == Trigger.TriggerSlot.START) {
@@ -134,7 +139,7 @@ public class EditSession {
         }
     }
 
-    public void setActiveSlot(Trigger.TriggerSlot slot, Trigger.TriggerType type) {
+    public void setSlotAndType(Trigger.TriggerSlot slot, Trigger.TriggerType type) {
         setActiveSlot(slot);
         setActiveType(type);
     }
@@ -203,11 +208,11 @@ public class EditSession {
     }
 
     public Trigger.TriggerSlot getActiveSlot() {
-        return activeTrigger == null ? null : activeTrigger.getTriggerSlot();
+        return activeTrigger == null ? Trigger.TriggerSlot.START : activeTrigger.getTriggerSlot();
     }
 
     public Trigger.TriggerType getActiveType() {
-        return activeTrigger == null ? null : activeTrigger.getType();
+        return activeTrigger == null ? Trigger.TriggerType.MAP : activeTrigger.getType();
     }
 
 
