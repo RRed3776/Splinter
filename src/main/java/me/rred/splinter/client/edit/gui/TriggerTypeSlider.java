@@ -20,8 +20,8 @@ public class TriggerTypeSlider {
     private final List<Trigger.TriggerType> types;
     private Consumer<Trigger.TriggerType> onSelectionChanged;
 
-    private static final long ANIM_DURATION_MS = 150L;
-    private long animStartMs = -ANIM_DURATION_MS; // start finished
+    private static final long ANIM_DURATION_MS = 250L;
+    private long animStartMs;
     private float animDirection = 0f; // +1 = forward, -1 = backwards
 
     public TriggerTypeSlider(int x, int y, int width, int height, Trigger.TriggerType initial) {
@@ -38,7 +38,7 @@ public class TriggerTypeSlider {
         return types.get(selectedIdx);
     }
 
-    private void setSelectedIdx(Trigger.TriggerType type) {
+    public void setSelectedIdx(Trigger.TriggerType type) {
         selectedIdx = types.indexOf(type);
     }
 
@@ -56,31 +56,31 @@ public class TriggerTypeSlider {
         double scale = client.getWindow().getScaleFactor();
         ScissorUtil.enable(scale, x + 1, y, width - 2, height);
 
-        int textGap = width / 5;
-        int nextIdx = (selectedIdx + 1) % types.size();
-        int prevIdx = (selectedIdx + types.size() - 1) % types.size();
+        int centerX = x + width / 2;
+        int textSpacing = width / 3;
+        int textY = y + (height - textRenderer.fontHeight) / 2;
 
+        // sliding animation offset
         long elapsed = System.currentTimeMillis() - animStartMs;
         float t = Math.min(1f, elapsed / (float) ANIM_DURATION_MS);
         float ease = 1f - (1f - t) * (1f - t);
-        int offset = Math.round(animDirection * textGap * (1f - ease));
+        float offset = animDirection * (1f - ease);
 
-        // selected type
-        String selectedTypeText = getSelected().toString();
-        int selectedTextWidth = textRenderer.getWidth(selectedTypeText);
-        int centerX = x + (width - selectedTextWidth) / 2;
-        int textY = y + (height - textRenderer.fontHeight) / 2;
-        textRenderer.drawWithShadow(matrixStack, selectedTypeText, centerX + offset, textY, SplinterColors.TEXT);
+        // draw five types (two offscreen, center is selected)
+        for (int i = -2; i <= 2; i++) {
+            int idx = ((selectedIdx + i) + types.size()) % types.size();
+            boolean isOuter = Math.abs(i) == 2;
+            if (isOuter && elapsed >= ANIM_DURATION_MS) continue; // skip offscreen during rest
 
-        // prev type
-        String prevText = types.get(prevIdx).toString();
-        int prevX = centerX - textGap - textRenderer.getWidth(prevText);
-        textRenderer.drawWithShadow(matrixStack, prevText, prevX + offset, textY, SplinterColors.TEXT);
+            String text = types.get(idx).toString();
+            int textWidth = textRenderer.getWidth(text);
+            float textCenterX = centerX + (i + offset) * textSpacing;
+            int textX = Math.round(textCenterX - textWidth / 2f);
 
-        // next type
-        String nextText = types.get(nextIdx).toString();
-        int nextX = centerX + selectedTextWidth + textGap;
-        textRenderer.drawWithShadow(matrixStack, nextText, nextX + offset, textY, SplinterColors.TEXT);
+            int color = (i == 0) ? SplinterColors.HIGHLIGHTED_TEXT : SplinterColors.TEXT;
+            textRenderer.drawWithShadow(matrixStack, text, textX, textY, color);
+        }
+
         ScissorUtil.disable();
     }
 

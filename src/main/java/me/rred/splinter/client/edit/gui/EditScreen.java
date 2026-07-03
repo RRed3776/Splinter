@@ -66,9 +66,31 @@ public class EditScreen extends Screen {
         addButton(new SplinterButton(
                 btnStart2X, btnY, btnWidth, btnHeight,
                 new LiteralText("SWITCH SLOT"),
-                editSession::toggleActiveSlot
-
+                () -> {
+                    editSession.toggleActiveSlot();
+                    slider.setSelectedIdx(editSession.getActiveType()); // update slider
+                }
         ));
+
+        int moveButtonsY = btnY - btnHeight - 3;
+        int moveButtonsWidth = (btnWidth / 2) - (borderWidth * 2);
+        int moveButton2X = btnStart2X + moveButtonsWidth + (borderWidth * 5);
+        addButton(new SplinterButton(
+                btnStart2X, moveButtonsY, moveButtonsWidth, btnHeight,
+                new LiteralText("<"),
+                () -> {
+                    slider.scroll(-1);
+                }
+        ));
+
+        addButton(new SplinterButton(
+                moveButton2X, moveButtonsY, moveButtonsWidth, btnHeight,
+                new LiteralText(">"),
+                () -> {
+                    slider.scroll(1);
+                }
+        ));
+
         int btnStart3X = btnStart2X + (int)(btnWidth * 0.25) + btnWidth;
         // confirm button
         if (editSession.hasChanges()) {
