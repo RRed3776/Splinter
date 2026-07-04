@@ -3,6 +3,7 @@
   "package": "me.rred.splinter.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "PiglinBrainMixin",
     "ServerScoreboardMixin"
   ],
   "injectors": {

@@ -1,5 +1,7 @@
 package me.rred.splinter.client;
 
+import me.rred.splinter.client.bartertracking.BarterTracker;
+import me.rred.splinter.client.network.ClientEventReceiver;
 import me.rred.splinter.client.routing.RouteEngine;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.routing.RouteRegistry;
@@ -14,10 +16,12 @@ public class SplinterClient implements ClientModInitializer {
     public static RouteRegistry routeRegistry = new RouteRegistry();
     public static SetManager setManager = new SetManager();
     public static RouteEngine routeEngine = new RouteEngine();
+    public static BarterTracker barterTracker = new BarterTracker();
 
     @Override
     public void onInitializeClient() {
         KeyInputHandler.register();
+        ClientEventReceiver.register();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null || client.world == null) return;

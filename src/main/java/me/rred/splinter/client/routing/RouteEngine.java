@@ -18,13 +18,9 @@ import java.awt.*;
 public class RouteEngine {
     boolean startFired = false;
     boolean endFired = false;
-    private boolean initialized = false;
 
     public void tick() {
         if (SplinterClient.ssm.getState() != SplinterStateMachine.State.ACTIVE) return;
-        if (!initialized) {
-            initialized = true;
-        }
         // tick poll-based events
         Route route = SplinterClient.setManager.getActiveSet().getRoute();
         Trigger start = route.getStartTrigger();
@@ -198,7 +194,6 @@ public class RouteEngine {
     }
 
     public void onWorldJoin() {
-        initialized = false;
         resetFired();
     }
 }
