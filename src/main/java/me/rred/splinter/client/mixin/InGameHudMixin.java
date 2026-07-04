@@ -1,5 +1,6 @@
 package me.rred.splinter.client.mixin;
 
+import me.rred.splinter.client.bartertracking.BarterHud;
 import me.rred.splinter.client.rendering.StateHud;
 import me.rred.splinter.client.timer.TimerHud;
 import net.minecraft.client.MinecraftClient;
@@ -28,5 +29,6 @@ public abstract class InGameHudMixin {
 
         TimerHud.render(matrixStack, getFontRenderer());
         StateHud.render(matrixStack, getFontRenderer());
+        BarterHud.render(matrixStack, getFontRenderer());
     }
 }

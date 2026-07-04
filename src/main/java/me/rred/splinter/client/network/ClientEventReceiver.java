@@ -12,7 +12,7 @@ public class ClientEventReceiver {
             ItemStack barteredStack = buf.readItemStack();
 
             context.getTaskQueue().execute(() -> {
-                SplinterClient.barterTracker.increment();
+                SplinterClient.barterTracker.updateBarterData(barteredStack);
             });
         });
     }

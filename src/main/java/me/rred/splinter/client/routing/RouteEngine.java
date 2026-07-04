@@ -95,15 +95,16 @@ public class RouteEngine {
         if (!inMap) {
             resetFired();
         }
-        if (start.isTriggered() && !startFired) {
+        if (start.isTriggered() && !startFired) { // execute the start trigger, start timer and begin collecting barter data
             SplinterClient.timer.clear();
             SplinterClient.timer.start();
+            SplinterClient.barterTracker.clear();
             start.reset();
             startFired = true;
             if (end instanceof PositionTrigger pt) pt.primed = false;
         }
 
-        if (end.isTriggered()) {
+        if (end.isTriggered()) { // execute end trigger, end timer and clear barter data
             if (SplinterClient.timer.isRunning()) {
                 SplinterClient.timer.stop();
                 long time = SplinterClient.timer.fetchElapsedTime();
