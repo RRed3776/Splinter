@@ -12,13 +12,14 @@ public class SplinterColors {
     public static int GRAY_BLUE  = 0xFF6B7080;
     public static int SOFT_BLUE = 0xFFABB0BF;
     public static int LAVENDER_GRAY = 0xFFC8CCD8;
-
     // export colors
     public static int TEAL_DEEP     = 0xFF00B89C;
     // active state
     public static int LIME_MUTED   = 0xFF6DB84A;
     // highlighted text
     public static int TEAL_LIGHT = 0xFF7AF0F0;
+    public static int START_GREEN = 0xFF00C853;
+    public static int STOP_RED = 0xFFEF5350;
 
     // default screen colors
     public static int BORDER = GRAY_BLUE;
@@ -36,6 +37,10 @@ public class SplinterColors {
     public static int MIDDLE_PANEL = LIGHT_GRAY;
     public static int TOP_PANEL = CHARCOAL_BLUE;
     public static int CONTEXT_MENU = CHARCOAL;
+
+    // edit screen
+    public static int START_COLOR = START_GREEN;
+    public static int END_COLOR = STOP_RED;
 
     public static int alpha(int color, int alpha) {
         // alpha will be of the form 0xFF or 0xCC

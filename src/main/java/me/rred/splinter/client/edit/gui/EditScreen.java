@@ -7,11 +7,13 @@ import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
+import me.rred.splinter.client.widgets.TextBox;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public class EditScreen extends Screen {
@@ -23,6 +25,7 @@ public class EditScreen extends Screen {
     private int borderWidth = 1;
 
     private TriggerTypeSlider slider;
+    private TextBox typeDescription;
 
     public EditScreen(EditSession editSession) {
         super(new LiteralText("Edit Route - " + SplinterClient.setManager.getActiveSet().getName()));
@@ -52,7 +55,14 @@ public class EditScreen extends Screen {
         int sliderHeight = height / 10;
         int sliderY = btnY - sliderHeight - (int)(btnHeight * 1.25);
         slider = new TriggerTypeSlider(sliderOffset, sliderY, sliderWidth, sliderHeight, editSession.getActiveType());
-        slider.setOnSelectionChanged(type -> editSession.setActiveType(type));
+        slider.setOnSelectionChanged(type -> {
+            editSession.setActiveType(type);
+            typeDescription.updateMessages(type.getDescription());
+        });
+
+        // type description textbox
+        int descY = screenTop + textRenderer.fontHeight + 20;
+        typeDescription = new TextBox(sliderOffset, descY, editSession.getActiveType().getDescription());
 
         // cancel button
         addButton(new SplinterButton(
@@ -107,7 +117,7 @@ public class EditScreen extends Screen {
         // GUI title
         drawCenteredText(matrixStack, textRenderer, title, width / 2, 10, textColor);
 
-        int middlePanelColor = SplinterColors.alpha(SplinterColors.MIDDLE_PANEL, 0xE0); // 88% opacity
+        int middlePanelColor = SplinterColors.MIDDLE_PANEL;
         fill(matrixStack, screenLeft, screenTop, screenRight, screenBottom, middlePanelColor);
 
         // outer border, screen is inside the border
@@ -125,10 +135,16 @@ public class EditScreen extends Screen {
         String slotText = editSession.getActiveSlot() == Trigger.TriggerSlot.START ?
                 "Start" : "End";
         int slotX = (width - textRenderer.getWidth(slotText)) / 2;
-        textRenderer.drawWithShadow(matrixStack, slotText, slotX, screenTop + 10, textColor);
+        int slotColor = editSession.getActiveSlot() == Trigger.TriggerSlot.START ?
+                SplinterColors.START_COLOR : SplinterColors.END_COLOR;
+        textRenderer.drawWithShadow(matrixStack, slotText, slotX, screenTop + 10, slotColor);
 
         // render slider
         slider.render(matrixStack, textRenderer, mouseX, mouseY);
+
+        // type description
+        typeDescription.render(matrixStack, textRenderer, mouseX, mouseY);
+
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 

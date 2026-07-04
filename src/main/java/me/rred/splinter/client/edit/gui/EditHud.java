@@ -49,7 +49,7 @@ public class EditHud {
         // edit select
         // edit mode hint
         String editSelectBind = KeyInputHandler.EDIT_SELECT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
-        String editSelectText = "Select Edit - " + editSelectBind;
+        String editSelectText = "Select Block Pos - " + editSelectBind;
         textRenderer.drawWithShadow(matrixStack, editSelectText, x, y + textHeight * 2 + gap, 0xFFBB00);
     }
 

@@ -41,7 +41,7 @@ public class KeyInputHandler {
             } else {
                 MinecraftClient client = MinecraftClient.getInstance();
                 if (client.player == null || client.world == null) return;
-                client.player.sendMessage( new LiteralText("cannot open the edit GUI in active mode. see \"i\" in sets GUI")
+                client.player.sendMessage( new LiteralText("must be in edit mode to open the EDIT GUI.")
                         .styled(s -> s.withColor(Formatting.RED)), false);
             }
         });
@@ -62,7 +62,7 @@ public class KeyInputHandler {
             } else {
                 MinecraftClient client = MinecraftClient.getInstance();
                 if (client.player == null || client.world == null) return;
-                client.player.sendMessage( new LiteralText("cannot select and edit in active mode. see \"i\" in sets GUI")
+                client.player.sendMessage( new LiteralText("must enter edit mode to select an edit")
                         .styled(s -> s.withColor(Formatting.RED)), false);
             }
         });
