@@ -27,6 +27,9 @@ public class PiglinBrainMixin {
 
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeItemStack(barteredStack);
+        buf.writeDouble(piglin.getX());
+        buf.writeDouble(piglin.getY());
+        buf.writeDouble(piglin.getZ());
 
         PlayerStream.watching(piglin).forEach(player -> {
             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, PacketIds.PIGLIN_BARTER, buf);

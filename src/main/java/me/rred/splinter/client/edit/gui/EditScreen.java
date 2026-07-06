@@ -54,7 +54,8 @@ public class EditScreen extends Screen {
         int sliderWidth = width - sliderOffset * 2;
         int sliderHeight = height / 10;
         int sliderY = btnY - sliderHeight - (int)(btnHeight * 1.25);
-        slider = new TriggerTypeSlider(sliderOffset, sliderY, sliderWidth, sliderHeight, editSession.getActiveType());
+        slider = new TriggerTypeSlider(sliderOffset, sliderY, sliderWidth, sliderHeight,
+                editSession.getActiveType(), editSession.getActiveSlot());
         slider.setOnSelectionChanged(type -> {
             editSession.setActiveType(type);
             typeDescription.updateMessages(type.getDescription());
@@ -78,7 +79,10 @@ public class EditScreen extends Screen {
                 new LiteralText("SWITCH SLOT"),
                 () -> {
                     editSession.toggleActiveSlot();
-                    slider.setSelectedIdx(editSession.getActiveType()); // update slider
+                    Trigger.TriggerType type = editSession.getActiveType();
+                    slider.setSelectedIdx(type); // update slider
+                    slider.updateTypes(editSession.getActiveSlot());
+                    typeDescription.updateMessages(type.getDescription());
                 }
         ));
 

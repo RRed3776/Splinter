@@ -1,10 +1,7 @@
 package me.rred.splinter.client.routing;
 
 import com.google.gson.*;
-import me.rred.splinter.client.routing.triggers.BlockBreakTrigger;
-import me.rred.splinter.client.routing.triggers.MapTrigger;
-import me.rred.splinter.client.routing.triggers.PositionTrigger;
-import me.rred.splinter.client.routing.triggers.Trigger;
+import me.rred.splinter.client.routing.triggers.*;
 
 import java.lang.reflect.Type;
 
@@ -27,6 +24,8 @@ public class TriggerTypeAdapter implements JsonSerializer<Trigger>, JsonDeserial
             case BLOCK_BREAK -> context.deserialize(jsonObject, BlockBreakTrigger.class);
             case MAP -> context.deserialize(jsonObject, MapTrigger.class);
             case POSITION -> context.deserialize(jsonObject, PositionTrigger.class);
+            case TRADE_START -> context.deserialize(jsonObject, TradeStartTrigger.class);
+            case TRADE_END -> context.deserialize(jsonObject, TradeEndTrigger.class);
         };
     }
 }

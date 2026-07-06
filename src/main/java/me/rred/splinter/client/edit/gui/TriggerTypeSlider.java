@@ -7,6 +7,7 @@ import me.rred.splinter.client.utils.SplinterColors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,21 +18,29 @@ import static net.minecraft.client.gui.DrawableHelper.fill;
 public class TriggerTypeSlider {
     private final int x, y, width, height;
     private int selectedIdx;
-    private final List<Trigger.TriggerType> types;
+    private List<Trigger.TriggerType> types;
     private Consumer<Trigger.TriggerType> onSelectionChanged;
 
     private static final long ANIM_DURATION_MS = 250L;
     private long animStartMs;
     private float animDirection = 0f; // +1 = forward, -1 = backwards
 
-    public TriggerTypeSlider(int x, int y, int width, int height, Trigger.TriggerType initial) {
+    public TriggerTypeSlider(int x, int y, int width, int height, Trigger.TriggerType initial, Trigger.TriggerSlot slot) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        types = List.of(Trigger.TriggerType.values());
+        updateTypes(slot);
         setSelectedIdx(initial);
+    }
 
+    public void updateTypes(Trigger.TriggerSlot slot) {
+        types = new ArrayList<>(List.of(Trigger.TriggerType.values()));
+        if (slot == Trigger.TriggerSlot.START) {
+            types.remove(Trigger.TriggerType.TRADE_END);
+        } else {
+            types.remove(Trigger.TriggerType.TRADE_START);
+        }
     }
 
     public Trigger.TriggerType getSelected() {

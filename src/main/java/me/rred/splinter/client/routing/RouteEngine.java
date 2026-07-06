@@ -2,10 +2,7 @@ package me.rred.splinter.client.routing;
 
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.SplinterStateMachine;
-import me.rred.splinter.client.routing.triggers.BlockBreakTrigger;
-import me.rred.splinter.client.routing.triggers.MapTrigger;
-import me.rred.splinter.client.routing.triggers.PositionTrigger;
-import me.rred.splinter.client.routing.triggers.Trigger;
+import me.rred.splinter.client.routing.triggers.*;
 import me.rred.splinter.client.rendering.BlockOutlineRenderer;
 import me.rred.splinter.client.utils.TriggersSharePos;
 import net.minecraft.client.MinecraftClient;
@@ -145,6 +142,27 @@ public class RouteEngine {
 
     }
 
+    public void onBarter(BlockPos pos) {
+        if (SplinterClient.ssm.getState() != SplinterStateMachine.State.ACTIVE) return;
+
+        Route route = SplinterClient.setManager.getActiveSet().getRoute();
+        Trigger start = route.getStartTrigger();
+        Trigger end = route.getEndTrigger();
+
+        if (start instanceof TradeStartTrigger tst && (tst.matches(pos) || tst.matches(pos.up()))) {
+            start.onFired();
+            checkTriggers(route);
+        }
+        if (end instanceof TradeEndTrigger tet) {
+            int totalBarters = SplinterClient.barterTracker.getTotalBarters();
+            if (totalBarters == tet.getBarterCap()) {
+                end.onFired();
+                checkTriggers(route);
+            }
+        }
+
+    }
+
     public void toggleTimer() {
         // don't allow toggling outside of map
         if (!SplinterClient.ssm.isInMap()) return;
@@ -174,6 +192,9 @@ public class RouteEngine {
         }
         if (trigger instanceof PositionTrigger pt && pt.getPos() != null) {
             new BlockOutlineRenderer(pt.getPos(), color, padding).render();
+        }
+        if (trigger instanceof TradeStartTrigger tst && tst.getPos() != null) {
+            new BlockOutlineRenderer(tst.getPos(), color, padding).render();
         }
     }
 

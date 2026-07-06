@@ -3,9 +3,7 @@ package me.rred.splinter.client.edit.gui;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
-import me.rred.splinter.client.routing.triggers.BlockBreakTrigger;
-import me.rred.splinter.client.routing.triggers.PositionTrigger;
-import me.rred.splinter.client.routing.triggers.Trigger;
+import me.rred.splinter.client.routing.triggers.*;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -64,6 +62,14 @@ public class EditHud {
             case POSITION -> {
                 BlockPos pos = ((PositionTrigger) trigger).getPos();
                 yield pos != null ? "POS (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "POS (unset)";
+            }
+            case TRADE_START -> {
+                BlockPos pos = ((TradeStartTrigger) trigger).getPos();
+                yield pos != null ? " TRADE_START (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "POS (unset)";
+            }
+            case TRADE_END -> {
+                int barterCap = ((TradeEndTrigger) trigger).getBarterCap();
+                yield "TRADE_END: " + barterCap + " barters";
             }
         };
     }

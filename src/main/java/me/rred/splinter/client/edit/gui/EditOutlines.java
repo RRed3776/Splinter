@@ -5,6 +5,7 @@ import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.rendering.BlockOutlineRenderer;
 import me.rred.splinter.client.routing.triggers.BlockBreakTrigger;
 import me.rred.splinter.client.routing.triggers.PositionTrigger;
+import me.rred.splinter.client.routing.triggers.TradeStartTrigger;
 import me.rred.splinter.client.routing.triggers.Trigger;
 import me.rred.splinter.client.utils.TriggersSharePos;
 import net.minecraft.client.MinecraftClient;
@@ -70,7 +71,7 @@ public class EditOutlines {
                 BlockPos pos = hit.getBlockPos();
                 return client.world.getBlockState(pos).isAir() ? null : pos;
             }
-            case POSITION ->{
+            case POSITION, TRADE_START -> {
                 BlockPos pos = hit.getBlockPos();
                 return client.world.getBlockState(pos).isAir() ? pos : pos.offset(hit.getSide());
             }
@@ -93,6 +94,10 @@ public class EditOutlines {
 
         if (trigger instanceof PositionTrigger pt && pt.getPos() != null) {
             new BlockOutlineRenderer(pt.getPos(), color, padding).render();
+        }
+
+        if (trigger instanceof TradeStartTrigger tst && tst.getPos() != null) {
+            new BlockOutlineRenderer(tst.getPos(), color, padding).render();
         }
     }
 

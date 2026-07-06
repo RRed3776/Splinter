@@ -36,6 +36,16 @@ public class PositionTrigger extends Trigger {
         return new PositionTrigger(triggerSlot, posCopy);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PositionTrigger other)) return false;
+        if (pos != null && other.pos != null) {
+            return pos.equals(other.pos);
+        } else {
+            return pos == null && other.pos == null;
+        }
+    }
+
     public TriggerType getType() {
         return TriggerType.POSITION;
     }
@@ -47,16 +57,4 @@ public class PositionTrigger extends Trigger {
     public void setPos(BlockPos pos) {
         this.pos = pos;
     }
-
-    public boolean equals(Object obj) {
-        if (!(obj instanceof PositionTrigger other)) return false;
-        if (pos != null && other.pos != null) {
-            return pos.equals(other.pos);
-        } else {
-            return pos == null && other.pos == null;
-        }
-    }
-
-
-
 }

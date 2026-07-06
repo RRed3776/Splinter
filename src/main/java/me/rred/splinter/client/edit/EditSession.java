@@ -3,10 +3,7 @@ package me.rred.splinter.client.edit;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.edit.gui.EditHud;
 import me.rred.splinter.client.edit.gui.EditOutlines;
-import me.rred.splinter.client.routing.triggers.BlockBreakTrigger;
-import me.rred.splinter.client.routing.triggers.MapTrigger;
-import me.rred.splinter.client.routing.triggers.PositionTrigger;
-import me.rred.splinter.client.routing.triggers.Trigger;
+import me.rred.splinter.client.routing.triggers.*;
 import me.rred.splinter.client.edit.gui.EditScreen;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
 import me.rred.splinter.client.rendering.BlockOutlineRenderer;
@@ -89,6 +86,13 @@ public class EditSession {
                     pendingEnd = new PositionTrigger(Trigger.TriggerSlot.END, hoveredPos);
                 }
             }
+            case TRADE_START -> {
+                if (hoveredPos == null) return;
+                pendingStart = new TradeStartTrigger(Trigger.TriggerSlot.START, hoveredPos);
+            }
+            case TRADE_END -> {
+                pendingEnd = activeTrigger.copy();
+            }
         }
     }
 
@@ -109,11 +113,6 @@ public class EditSession {
 
     public void setActiveType(Trigger.TriggerType type) {
         if (activeTrigger == null) return;
-//        if (getActiveSlot() == Trigger.TriggerSlot.START) {
-//            pendingStart = ogStart;
-//        } else {
-//            pendingEnd = ogEnd;
-//        }
         switch (type) {
             case MAP -> {
                 if (getActiveSlot() == Trigger.TriggerSlot.START) {
@@ -135,6 +134,12 @@ public class EditSession {
                 } else {
                     activeTrigger = new PositionTrigger(Trigger.TriggerSlot.END, null);
                 }
+            }
+            case TRADE_START -> {
+                activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.START, null);
+            }
+            case TRADE_END -> {
+                activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 100);
             }
         }
     }
@@ -162,24 +167,6 @@ public class EditSession {
     public void cancel() {
         pendingStart = ogStart;
         pendingEnd = ogEnd;
-    }
-
-    private void renderTriggerOutline(Trigger trigger, boolean pending, Color color, float padding) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null) return;
-
-        if (trigger instanceof BlockBreakTrigger bt && bt.getPos() != null) {
-            // check if its air and a pending change
-            if (pending && client.world.getBlockState(bt.getPos()).isAir()) {
-                bt.setPos(null);
-            } else {
-                new BlockOutlineRenderer(bt.getPos(), color, padding).render();
-            }
-        }
-
-        if (trigger instanceof PositionTrigger pt && pt.getPos() != null) {
-            new BlockOutlineRenderer(pt.getPos(), color, padding).render();
-        }
     }
 
     public void setHoveredPos(BlockPos pos) {

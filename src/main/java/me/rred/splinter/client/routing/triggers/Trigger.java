@@ -18,6 +18,12 @@ public abstract class Trigger {
                 "Starts/Stops when",
                 "the player position passes into the",
                 "specified block position"
+        )),
+        TRADE_START(List.of(
+                "Trade start"
+        )),
+        TRADE_END(List.of(
+                "Trade end"
         ));
 
         private final List<String> description;
@@ -43,7 +49,7 @@ public abstract class Trigger {
 
     public abstract Trigger copy();
 
-    // called by RouteHandler each tick for poll-based events;
+    // called by RouteEngine each tick for poll-based events;
     public void tick() {}
 
     // called by mixins for push-based events
