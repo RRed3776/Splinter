@@ -2,10 +2,9 @@ package me.rred.splinter.client.widgets.modals;
 
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
-import me.rred.splinter.client.widgets.SplinterExitButton;
+import me.rred.splinter.client.widgets.SplinterSmallButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
@@ -14,10 +13,10 @@ import java.util.List;
 
 import static net.minecraft.client.gui.DrawableHelper.fill;
 
-public class ConfirmModal extends SplinterModal{
+public class ConfirmModal extends SplinterModal {
     private final Runnable onConfirm;
     private int startTextY;
-    private SplinterExitButton exitButton;
+    private SplinterSmallButton exitButton;
 
     public ConfirmModal(String message, Runnable onConfirm) {
         this.message = message;
@@ -56,7 +55,8 @@ public class ConfirmModal extends SplinterModal{
         this.x = (screenWidth - width) / 2;
         this.y = (screenHeight - height) / 2;
         // initialize exit button top right with scalar 9
-        exitButton = new SplinterExitButton(x + width - 10, y + 1, 9, this::close);
+        exitButton = new SplinterSmallButton(x + width - 10, y + 1, 9,
+                "x", 0xFFFF2222, this::close);
 
         startTextY = this.y + (int) (lineHeight * 0.5);
 

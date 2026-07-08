@@ -8,7 +8,7 @@ import me.rred.splinter.client.routing.gui.RoutesScreen;
 import me.rred.splinter.client.sets.gui.exports.ExportScreen;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
-import me.rred.splinter.client.widgets.SplinterExitButton;
+import me.rred.splinter.client.widgets.SplinterSmallButton;
 import me.rred.splinter.client.widgets.modals.ConfirmModal;
 import me.rred.splinter.client.widgets.modals.InputModal;
 import me.rred.splinter.client.widgets.modals.SplinterModal;
@@ -17,12 +17,10 @@ import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.TimerFormatter;
 import me.rred.splinter.client.utils.TruncateText;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -52,7 +50,7 @@ public class SetsScreen extends Screen {
     private int partitionWidth;
     private int lastClickX, lastClickY;
     private SplinterModal activeModal;
-    private List<SplinterExitButton> exitButtons = new ArrayList<>();
+    private List<SplinterSmallButton> exitButtons = new ArrayList<>();
 
     public SetsScreen() {
         super(new LiteralText("Splinter Sets"));
@@ -289,7 +287,8 @@ public class SetsScreen extends Screen {
         int exitButtonY = screenTop + (headerHeight - exitScalar) / 2;
 
         exitButtons.clear();
-        SplinterExitButton exitButtonA = new SplinterExitButton(startX + borderWidth, exitButtonY, exitScalar,
+        SplinterSmallButton exitButtonA = new SplinterSmallButton(
+                startX + borderWidth, exitButtonY, exitScalar, "x", 0xFFFF2222,
                  () -> {
                      SplinterClient.setManager.clearDisplayedSetA();
                      init();
@@ -297,7 +296,8 @@ public class SetsScreen extends Screen {
         exitButtonA.visible = setA != null;
         exitButtons.add(exitButtonA);
 
-        SplinterExitButton exitButtonB = new SplinterExitButton(startX + borderWidth + partitionWidth, exitButtonY, exitScalar,
+        SplinterSmallButton exitButtonB = new SplinterSmallButton(
+                startX + borderWidth + partitionWidth, exitButtonY, exitScalar, "x", 0xFFFF2222,
                 () -> {
                     SplinterClient.setManager.clearDisplayedSetB();
                     init();
@@ -392,7 +392,7 @@ public class SetsScreen extends Screen {
             activeModal.render(matrixStack, textRenderer, mouseX, mouseY);
         }
 
-        for (SplinterExitButton exitButton : exitButtons) {
+        for (SplinterSmallButton exitButton : exitButtons) {
             exitButton.renderButton(matrixStack, mouseX, mouseY);
         }
 
@@ -445,7 +445,7 @@ public class SetsScreen extends Screen {
             return true;
         }
 
-        for (SplinterExitButton exitButton : exitButtons) {
+        for (SplinterSmallButton exitButton : exitButtons) {
             if (exitButton != null && exitButton.handleClick(mouseX, mouseY, button)) return true;
         }
 

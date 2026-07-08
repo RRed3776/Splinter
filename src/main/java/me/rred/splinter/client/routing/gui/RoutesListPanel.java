@@ -1,11 +1,9 @@
 package me.rred.splinter.client.routing.gui;
 
-import me.rred.splinter.Splinter;
 import me.rred.splinter.client.routing.Route;
 import me.rred.splinter.client.sets.gui.ListPanel;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.utils.TruncateText;
-import me.rred.splinter.client.widgets.SplinterExitButton;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;

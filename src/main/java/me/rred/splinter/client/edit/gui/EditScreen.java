@@ -15,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.system.CallbackI;
 
 public class EditScreen extends Screen {
 
@@ -26,6 +27,8 @@ public class EditScreen extends Screen {
 
     private TriggerTypeSlider slider;
     private TextBox typeDescription;
+    private BarterCountSelector selector;
+    private Trigger.TriggerType currentSelection;
 
     public EditScreen(EditSession editSession) {
         super(new LiteralText("Edit Route - " + SplinterClient.setManager.getActiveSet().getName()));
@@ -36,6 +39,8 @@ public class EditScreen extends Screen {
     protected void init() {
         buttons.clear();
         children.clear();
+
+        currentSelection = editSession.getActiveType();
 
         // edit UI screen dimensions
         screenTop = offset - 25;
@@ -83,6 +88,8 @@ public class EditScreen extends Screen {
                     slider.setSelectedIdx(type); // update slider
                     slider.updateTypes(editSession.getActiveSlot());
                     typeDescription.updateMessages(type.getDescription());
+                    currentSelection = editSession.getActiveType();
+                    updateSelector();
                 }
         ));
 
@@ -94,6 +101,8 @@ public class EditScreen extends Screen {
                 new LiteralText("<"),
                 () -> {
                     slider.scroll(-1);
+                    currentSelection = editSession.getActiveType();
+                    updateSelector();
                 }
         ));
 
@@ -102,6 +111,8 @@ public class EditScreen extends Screen {
                 new LiteralText(">"),
                 () -> {
                     slider.scroll(1);
+                    currentSelection = editSession.getActiveType();
+                    updateSelector();
                 }
         ));
 
@@ -113,6 +124,21 @@ public class EditScreen extends Screen {
                     new LiteralText("CONFIRM"),
                     editSession::confirm
             ));
+        }
+
+        // barter count selection
+        int selectorHeight = height / 12;
+        int selectorY = sliderY - selectorHeight - 3;
+        selector = new BarterCountSelector(btnStart2X, selectorY, btnWidth, selectorHeight);
+        updateSelector();
+    }
+
+    public void updateSelector() {
+        int barterCap = editSession.getBarterCap();
+        if (currentSelection == Trigger.TriggerType.TRADE_END) {
+            selector.openSelector(barterCap);
+        } else {
+            selector.close();
         }
     }
 
@@ -148,6 +174,9 @@ public class EditScreen extends Screen {
 
         // type description
         typeDescription.render(matrixStack, textRenderer, mouseX, mouseY);
+
+        // barter cap selector (only visible on TRADE_END trigger)
+        selector.render(matrixStack, textRenderer, mouseX, mouseY);
 
         super.render(matrixStack, mouseX, mouseY, delta);
     }

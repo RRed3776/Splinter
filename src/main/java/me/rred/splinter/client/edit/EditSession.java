@@ -139,8 +139,16 @@ public class EditSession {
                 activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.START, null);
             }
             case TRADE_END -> {
-                activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 100);
+                activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 50);
             }
+        }
+    }
+
+    public int getBarterCap() {
+        if (activeTrigger instanceof TradeEndTrigger tet) {
+            return tet.getBarterCap();
+        } else {
+            return -1;
         }
     }
 

@@ -104,6 +104,7 @@ public class RouteEngine {
         if (end.isTriggered()) { // execute end trigger, end timer and clear barter data
             if (SplinterClient.timer.isRunning()) {
                 SplinterClient.timer.stop();
+                SplinterClient.barterTracker.lockTracking();
                 long time = SplinterClient.timer.fetchElapsedTime();
                 SplinterClient.setManager.addTime(time);
                 endFired = true;
