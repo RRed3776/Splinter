@@ -288,7 +288,8 @@ public class SetsScreen extends Screen {
 
         exitButtons.clear();
         SplinterSmallButton exitButtonA = new SplinterSmallButton(
-                startX + borderWidth, exitButtonY, exitScalar, "x", 0xFFFF2222,
+                startX + borderWidth, exitButtonY, exitScalar,
+                "x", 0xFFFF2222, true,
                  () -> {
                      SplinterClient.setManager.clearDisplayedSetA();
                      init();
@@ -297,7 +298,8 @@ public class SetsScreen extends Screen {
         exitButtons.add(exitButtonA);
 
         SplinterSmallButton exitButtonB = new SplinterSmallButton(
-                startX + borderWidth + partitionWidth, exitButtonY, exitScalar, "x", 0xFFFF2222,
+                startX + borderWidth + partitionWidth, exitButtonY, exitScalar,
+                "x", 0xFFFF2222, true,
                 () -> {
                     SplinterClient.setManager.clearDisplayedSetB();
                     init();

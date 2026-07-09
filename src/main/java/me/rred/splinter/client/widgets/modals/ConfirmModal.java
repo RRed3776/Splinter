@@ -56,7 +56,7 @@ public class ConfirmModal extends SplinterModal {
         this.y = (screenHeight - height) / 2;
         // initialize exit button top right with scalar 9
         exitButton = new SplinterSmallButton(x + width - 10, y + 1, 9,
-                "x", 0xFFFF2222, this::close);
+                "x", 0xFFFF2222, true, this::close);
 
         startTextY = this.y + (int) (lineHeight * 0.5);
 

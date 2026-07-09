@@ -10,12 +10,14 @@ public class SplinterSmallButton extends AbstractSplinterHoverButton {
     private final Runnable action;
     private final String symbol;
     private final int symbolColor;
+    private boolean hideOnPress;
 
-    public SplinterSmallButton(int x, int y, int scalar, String symbol, int symbolColor, Runnable action) {
+    public SplinterSmallButton(int x, int y, int scalar, String symbol, int symbolColor, boolean hideOnPress, Runnable action) {
         super(x, y, scalar);
         this.action = action;
         this.symbol = symbol;
         this.symbolColor = symbolColor;
+        this.hideOnPress = hideOnPress;
     }
 
     @Override
@@ -35,6 +37,10 @@ public class SplinterSmallButton extends AbstractSplinterHoverButton {
         // for now hardcode it for scalar 11
         int delTextX = 1 + x + (scalar - textRenderer.getWidth(symbol)) / 2; // 2 px from right edge
         int delTextY = y + (scalar - textRenderer.fontHeight) / 2;
+        if (symbol.equals("<") || symbol.equals(">")) {
+            delTextY = delTextY + 1;
+        }
+
 
         RenderSystem.enableDepthTest();
 
@@ -45,8 +51,8 @@ public class SplinterSmallButton extends AbstractSplinterHoverButton {
     public boolean handleClick(double mouseX, double mouseY, int button) {
         if (!hovered || !visible) return false;
         if (button == 0) {
-            visible = false;
             onPress();
+            if (hideOnPress) visible = false;
             return true;
         }
         return false;

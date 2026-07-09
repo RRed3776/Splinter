@@ -26,14 +26,14 @@ public class BarterCountSelector {
     public void openSelector(int initialCap) {
         this.selectedCap = initialCap;
         visible = true;
-        int offset = 1;
+        int offset = 3;
         int scalar = height - 2 - offset * 2;
         int buttonsY = y + 1 + offset;
         decrement = new SplinterSmallButton(x + 1 + offset, buttonsY, scalar,
-                "<", SplinterColors.TEXT, () -> selectedCap--);
+                "<", SplinterColors.TEXT, false, () -> selectedCap--);
 
-        increment = new SplinterSmallButton(x + width - scalar, buttonsY, scalar,
-                ">", SplinterColors.TEXT, () -> selectedCap++);
+        increment = new SplinterSmallButton(x + width - scalar - 1 - offset, buttonsY, scalar,
+                ">", SplinterColors.TEXT, false, () -> selectedCap++);
     }
 
     public void close() {
@@ -45,6 +45,14 @@ public class BarterCountSelector {
         if (!visible) return;
         fill(matrixStack, x, y, x + width, y + height, SplinterColors.BORDER);
         fill(matrixStack, x + 1, y + 1, x + width - 1, y + height - 1, SplinterColors.MODAL_BG);
+
+        // render current barter amount
+        String capText = String.valueOf(selectedCap);
+        int textWidth = textRenderer.getWidth(capText);
+        int textX = x + (width - textWidth) / 2;
+        int textHeight = textRenderer.fontHeight;
+        int textY = y + (height - textHeight) / 2;
+        textRenderer.drawWithShadow(matrixStack, capText, textX, textY, SplinterColors.TEXT);
 
         if (decrement != null) {
             decrement.renderButton(matrixStack, mouseX, mouseY);
@@ -64,6 +72,4 @@ public class BarterCountSelector {
         if (increment != null && increment.handleClick(mouseX, mouseY, button)) return true;
         return false;
     }
-
-
 }

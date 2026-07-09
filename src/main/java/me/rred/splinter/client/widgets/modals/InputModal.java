@@ -59,7 +59,9 @@ public class InputModal extends SplinterModal {
         this.y = (screenHeight - height) / 2;
 
         // initialize exit button top right with scalar 9
-        exitButton = new SplinterSmallButton(x + width - 10, y + 1, 9, "x", 0xFFFF2222, this::close);
+        exitButton = new SplinterSmallButton(
+                x + width - 10, y + 1, 9,
+                "x", 0xFFFF2222, true, this::close);
 
         // build the lines from top to bottom
         mainTextY = this.y + (int) (lineHeight * 0.5); // text always has a .5 gap from top
