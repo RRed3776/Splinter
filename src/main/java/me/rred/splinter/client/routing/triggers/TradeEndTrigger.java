@@ -26,4 +26,8 @@ public class TradeEndTrigger extends Trigger {
     public int getBarterCap() {
         return barterCap;
     }
+
+    public void setBarterCap(int barterCap) {
+        this.barterCap = barterCap;
+    }
 }

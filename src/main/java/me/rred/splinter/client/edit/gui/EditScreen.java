@@ -28,7 +28,6 @@ public class EditScreen extends Screen {
     private TriggerTypeSlider slider;
     private TextBox typeDescription;
     private BarterCountSelector selector;
-    private Trigger.TriggerType currentSelection;
 
     public EditScreen(EditSession editSession) {
         super(new LiteralText("Edit Route - " + SplinterClient.setManager.getActiveSet().getName()));
@@ -39,8 +38,6 @@ public class EditScreen extends Screen {
     protected void init() {
         buttons.clear();
         children.clear();
-
-        currentSelection = editSession.getActiveType();
 
         // edit UI screen dimensions
         screenTop = offset - 25;
@@ -63,6 +60,7 @@ public class EditScreen extends Screen {
                 editSession.getActiveType(), editSession.getActiveSlot());
         slider.setOnSelectionChanged(type -> {
             editSession.setActiveType(type);
+            updateSelector();
             typeDescription.updateMessages(type.getDescription());
         });
 
@@ -88,7 +86,6 @@ public class EditScreen extends Screen {
                     slider.setSelectedIdx(type); // update slider
                     slider.updateTypes(editSession.getActiveSlot());
                     typeDescription.updateMessages(type.getDescription());
-                    currentSelection = editSession.getActiveType();
                     updateSelector();
                 }
         ));
@@ -101,7 +98,6 @@ public class EditScreen extends Screen {
                 new LiteralText("<"),
                 () -> {
                     slider.scroll(-1);
-                    currentSelection = editSession.getActiveType();
                     updateSelector();
                 }
         ));
@@ -111,7 +107,6 @@ public class EditScreen extends Screen {
                 new LiteralText(">"),
                 () -> {
                     slider.scroll(1);
-                    currentSelection = editSession.getActiveType();
                     updateSelector();
                 }
         ));
@@ -130,12 +125,15 @@ public class EditScreen extends Screen {
         int selectorHeight = height / 12;
         int selectorY = sliderY - selectorHeight - 3;
         selector = new BarterCountSelector(btnStart2X, selectorY, btnWidth, selectorHeight);
+        selector.setOnCapChange(cap -> {
+            editSession.updateBarterCap(cap);
+        });
         updateSelector();
     }
 
     public void updateSelector() {
         int barterCap = editSession.getBarterCap();
-        if (currentSelection == Trigger.TriggerType.TRADE_END) {
+        if (editSession.getActiveType() == Trigger.TriggerType.TRADE_END) {
             selector.openSelector(barterCap);
         } else {
             selector.close();
@@ -202,6 +200,9 @@ public class EditScreen extends Screen {
         if (slider.isMouseOver(mouseX, mouseY)) {
             slider.scroll(amount);
             return true;
+        }
+        if (selector.isMouseOver(mouseX, mouseY)) {
+            selector.scroll(amount);
         }
         return super.mouseScrolled(mouseX, mouseY, amount);
     }

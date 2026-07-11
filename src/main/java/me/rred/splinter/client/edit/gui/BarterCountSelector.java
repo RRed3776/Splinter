@@ -7,6 +7,9 @@ import me.rred.splinter.client.widgets.SplinterSmallButton;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+
 import static net.minecraft.client.gui.DrawableHelper.fill;
 
 public class BarterCountSelector {
@@ -15,6 +18,7 @@ public class BarterCountSelector {
     private int selectedCap;
     private SplinterSmallButton decrement;
     private SplinterSmallButton increment;
+    private IntConsumer onCapChange;
 
     public BarterCountSelector(int x, int y, int width, int height) {
         this.x = x;
@@ -30,10 +34,16 @@ public class BarterCountSelector {
         int scalar = height - 2 - offset * 2;
         int buttonsY = y + 1 + offset;
         decrement = new SplinterSmallButton(x + 1 + offset, buttonsY, scalar,
-                "<", SplinterColors.TEXT, false, () -> selectedCap--);
+                "<", SplinterColors.TEXT, false, () -> {
+            selectedCap--;
+            sendChanges();
+        } );
 
         increment = new SplinterSmallButton(x + width - scalar - 1 - offset, buttonsY, scalar,
-                ">", SplinterColors.TEXT, false, () -> selectedCap++);
+                ">", SplinterColors.TEXT, false, () -> {
+            selectedCap++;
+            sendChanges();
+        });
     }
 
     public void close() {
@@ -67,9 +77,28 @@ public class BarterCountSelector {
                 mouseY >= y && mouseY <= y + height;
     }
 
+    public void setOnCapChange(IntConsumer listener) {
+        this.onCapChange = listener;
+    }
+
     public boolean handleClick(double mouseX, double mouseY, int button) {
         if (decrement != null && decrement.handleClick(mouseX, mouseY, button)) return true;
         if (increment != null && increment.handleClick(mouseX, mouseY, button)) return true;
         return false;
+    }
+
+    public void scroll(double amount) {
+        if (amount > 0) {
+            if (selectedCap == 250);
+            selectedCap++;
+        } else {
+            if (selectedCap == 0) return;
+            selectedCap--;
+        }
+        sendChanges();
+    }
+
+    public void sendChanges() {
+        if (onCapChange != null) onCapChange.accept(selectedCap);
     }
 }

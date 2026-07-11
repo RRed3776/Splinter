@@ -96,17 +96,6 @@ public class EditSession {
         }
     }
 
-    public void setActiveSlot(Trigger.TriggerSlot slot) {
-        if (getActiveSlot() == slot) return;
-        Trigger tempTrigger = activeTrigger;
-        if (oldActiveTrigger != null) {
-            activeTrigger = oldActiveTrigger;
-        } else {
-            activeTrigger = slot == Trigger.TriggerSlot.START ? pendingStart : pendingEnd;
-        }
-        oldActiveTrigger = tempTrigger;
-    }
-
     public void toggleActiveSlot() {
         activeTrigger = getActiveSlot() == Trigger.TriggerSlot.START ? pendingEnd : pendingStart;
     }
@@ -117,8 +106,10 @@ public class EditSession {
             case MAP -> {
                 if (getActiveSlot() == Trigger.TriggerSlot.START) {
                     activeTrigger = new MapTrigger(Trigger.TriggerSlot.START);
+                    pendingStart = activeTrigger;
                 } else {
                     activeTrigger = new MapTrigger(Trigger.TriggerSlot.END);
+                    pendingEnd = activeTrigger;
                 }
             }
             case BLOCK_BREAK -> {
@@ -139,7 +130,8 @@ public class EditSession {
                 activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.START, null);
             }
             case TRADE_END -> {
-                activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 50);
+                activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 100);
+                pendingEnd = activeTrigger;
             }
         }
     }
@@ -152,9 +144,10 @@ public class EditSession {
         }
     }
 
-    public void setSlotAndType(Trigger.TriggerSlot slot, Trigger.TriggerType type) {
-        setActiveSlot(slot);
-        setActiveType(type);
+    public void updateBarterCap(int cap) {
+        if (activeTrigger instanceof TradeEndTrigger tet) {
+            tet.setBarterCap(cap);
+        }
     }
 
     public void confirm() {
