@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-// referencing BastionHelper for packet implementation
+// referencing BastionHelper
 public class ClientEventReceiver {
     public static void register() {
         ClientSidePacketRegistry.INSTANCE.register(PacketIds.PIGLIN_BARTER, (context, buf) -> {

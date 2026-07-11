@@ -1,5 +1,6 @@
 package me.rred.splinter;
 
+import me.rred.splinter.network.ServerEventReceiver;
 import net.fabricmc.api.ModInitializer;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +21,7 @@ public class Splinter implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		ServerEventReceiver.register();
 		LOGGER.info("Splinter initialized!");
 	}
 }

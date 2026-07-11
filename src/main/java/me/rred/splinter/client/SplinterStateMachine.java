@@ -1,6 +1,7 @@
 package me.rred.splinter.client;
 
 import me.rred.splinter.client.edit.EditSession;
+import me.rred.splinter.client.network.ClientEventEmitter;
 import me.rred.splinter.client.rendering.StateHud;
 import me.rred.splinter.client.routing.Route;
 import net.minecraft.client.MinecraftClient;
@@ -54,16 +55,12 @@ public class SplinterStateMachine {
         if (!StateHud.isHintConsumed()) {
             StateHud.setHintConsumed(true);
         }
-//        if (state == State.ACTIVE) {
-//            client.player.sendMessage( new LiteralText("cannot edit in active mode. see \"i\" in sets GUI")
-//                    .styled(s -> s.withColor(Formatting.RED)), false);
-//            return; // can't start running while making changes
-//        }
         SplinterClient.timer.clear();
         editSession = null;
 
         state = State.EDIT;
         editSession = new EditSession(SplinterClient.setManager.getActiveSet());
+        ClientEventEmitter.setCreative();
         // display set UI
     }
 
@@ -96,6 +93,10 @@ public class SplinterStateMachine {
             Route route = SplinterClient.setManager.getActiveSet().getRoute();
             route.getStartTrigger().reset();
             route.getEndTrigger().reset();
+        } else {
+            if (isEditing()) {
+                ClientEventEmitter.setCreative();
+            }
         }
     }
 

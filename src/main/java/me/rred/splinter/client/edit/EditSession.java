@@ -3,6 +3,7 @@ package me.rred.splinter.client.edit;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.edit.gui.EditHud;
 import me.rred.splinter.client.edit.gui.EditOutlines;
+import me.rred.splinter.client.network.ClientEventEmitter;
 import me.rred.splinter.client.routing.triggers.*;
 import me.rred.splinter.client.edit.gui.EditScreen;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
@@ -11,11 +12,20 @@ import me.rred.splinter.client.sets.SplinterSet;
 import me.rred.splinter.client.utils.TriggersSharePos;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
+import org.spongepowered.asm.launch.platform.MixinPlatformAgentMinecraftForge;
 
 import java.awt.*;
 
