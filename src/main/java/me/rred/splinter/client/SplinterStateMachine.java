@@ -4,6 +4,9 @@ import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.network.ClientEventEmitter;
 import me.rred.splinter.client.rendering.StateHud;
 import me.rred.splinter.client.routing.Route;
+import me.rred.splinter.client.routing.triggers.MapTrigger;
+import me.rred.splinter.client.routing.triggers.Trigger;
+import me.rred.splinter.client.sets.SplinterSet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
@@ -56,17 +59,20 @@ public class SplinterStateMachine {
             StateHud.setHintConsumed(true);
         }
         SplinterClient.timer.clear();
-        editSession = null;
 
         state = State.EDIT;
-        editSession = new EditSession(SplinterClient.setManager.getActiveSet());
+        SplinterSet set = SplinterClient.setManager.getActiveSet();
+        Route route = set.getEditableRoute();
+        editSession = new EditSession(set, route);
         ClientEventEmitter.setCreative();
         // display set UI
     }
 
     public void refreshEditSession() {
         if (state == State.EDIT) {
-            editSession = new EditSession(SplinterClient.setManager.getActiveSet());
+            SplinterSet set = SplinterClient.setManager.getActiveSet();
+            Route route = set.getEditableRoute();
+            editSession = new EditSession(set, route);
         }
     }
 

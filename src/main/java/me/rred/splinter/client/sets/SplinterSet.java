@@ -2,6 +2,8 @@ package me.rred.splinter.client.sets;
 
 import com.mojang.serialization.Codec;
 import me.rred.splinter.client.routing.Route;
+import me.rred.splinter.client.routing.triggers.MapTrigger;
+import me.rred.splinter.client.routing.triggers.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +72,16 @@ public class SplinterSet {
     }
 
     public Route getRoute() {
+        return route;
+    }
+
+    public Route getEditableRoute() {
+        if (route.isDefault()) {
+            String routeName = name + " Route";
+            MapTrigger start = new MapTrigger(Trigger.TriggerSlot.START);
+            MapTrigger end = new MapTrigger(Trigger.TriggerSlot.END);
+            return new Route(start, end, routeName);
+        }
         return route;
     }
 

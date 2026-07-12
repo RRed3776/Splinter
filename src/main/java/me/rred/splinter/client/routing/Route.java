@@ -8,11 +8,13 @@ public class Route {
     public String name;
     private Trigger startTrigger;
     private Trigger endTrigger;
+    private boolean def = false;
 
     public Route() {
         startTrigger = new MapTrigger(Trigger.TriggerSlot.START);
         endTrigger = new MapTrigger(Trigger.TriggerSlot.END);
         name = "default";
+        def = true;
     }
 
     public Route(String name) {
@@ -53,6 +55,10 @@ public class Route {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefault() {
+        return def;
     }
 
     @Override

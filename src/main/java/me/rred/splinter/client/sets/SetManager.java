@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetManager {
-    private List<SplinterSet> sets = new ArrayList<>();
+    private final List<SplinterSet> sets = new ArrayList<>();
     private SplinterSet activeSet = null;
     private SplinterSet displayedSetA = null;
     private SplinterSet displayedSetB = null;

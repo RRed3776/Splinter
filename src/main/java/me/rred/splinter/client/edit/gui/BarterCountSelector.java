@@ -1,6 +1,7 @@
 package me.rred.splinter.client.edit.gui;
 
 import me.rred.splinter.Splinter;
+import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.routing.triggers.Trigger;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterSmallButton;

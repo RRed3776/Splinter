@@ -4,6 +4,7 @@ import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.edit.gui.EditHud;
 import me.rred.splinter.client.edit.gui.EditOutlines;
 import me.rred.splinter.client.network.ClientEventEmitter;
+import me.rred.splinter.client.routing.Route;
 import me.rred.splinter.client.routing.triggers.*;
 import me.rred.splinter.client.edit.gui.EditScreen;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
@@ -36,14 +37,18 @@ public class EditSession {
     private Trigger ogEnd;
     private Trigger pendingStart;
     private Trigger pendingEnd;
+
     private final SplinterSet editSet;
+    private final Route editRoute;
+
     private BlockPos hoveredPos;
 
 
-    public EditSession(SplinterSet set) {
-        this.editSet = set; // most likely just the active set for now
-        this.ogStart = set.getRoute().getStartTrigger();
-        this.ogEnd = set.getRoute().getEndTrigger();
+    public EditSession(SplinterSet editSet, Route route) {
+        this.editSet = editSet;
+        this.editRoute = route;
+        this.ogStart = route.getStartTrigger();
+        this.ogEnd = route.getEndTrigger();
         this.pendingStart = ogStart;
         this.pendingEnd = ogEnd;
         this.activeTrigger = pendingStart; // initially edit the start trigger
@@ -58,6 +63,7 @@ public class EditSession {
         if (activeTrigger == null) return;
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
+        if (!SplinterClient.ssm.isInMap()) return;
 
         switch (getActiveType()) {
             case MAP -> {
@@ -116,10 +122,10 @@ public class EditSession {
             case MAP -> {
                 if (getActiveSlot() == Trigger.TriggerSlot.START) {
                     activeTrigger = new MapTrigger(Trigger.TriggerSlot.START);
-                    pendingStart = activeTrigger;
+                    pendingStart = activeTrigger.copy();
                 } else {
                     activeTrigger = new MapTrigger(Trigger.TriggerSlot.END);
-                    pendingEnd = activeTrigger;
+                    pendingEnd = activeTrigger.copy();
                 }
             }
             case BLOCK_BREAK -> {
@@ -141,7 +147,7 @@ public class EditSession {
             }
             case TRADE_END -> {
                 activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 100);
-                pendingEnd = activeTrigger;
+                pendingEnd = activeTrigger.copy();
             }
         }
     }
@@ -157,6 +163,10 @@ public class EditSession {
     public void updateBarterCap(int cap) {
         if (activeTrigger instanceof TradeEndTrigger tet) {
             tet.setBarterCap(cap);
+            pendingEnd = activeTrigger.copy();
+        } else {
+            activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, cap);
+            pendingEnd = activeTrigger.copy();
         }
     }
 
@@ -164,8 +174,9 @@ public class EditSession {
         if (pendingStart == null || pendingEnd == null) return;
         ogStart = pendingStart;
         ogEnd = pendingEnd;
-        editSet.getRoute().setStartTrigger(pendingStart);
-        editSet.getRoute().setEndTrigger(pendingEnd);
+        editRoute.setStartTrigger(pendingStart);
+        editRoute.setEndTrigger(pendingEnd);
+        editSet.setRoute(editRoute);
         SplinterClient.ssm.setIdle();
 
         MinecraftClient client = MinecraftClient.getInstance();
@@ -178,6 +189,10 @@ public class EditSession {
     public void cancel() {
         pendingStart = ogStart;
         pendingEnd = ogEnd;
+    }
+
+    public String getRouteName() {
+        return editRoute.getName();
     }
 
     public void setHoveredPos(BlockPos pos) {
@@ -212,6 +227,4 @@ public class EditSession {
     public Trigger.TriggerType getActiveType() {
         return activeTrigger == null ? Trigger.TriggerType.MAP : activeTrigger.getType();
     }
-
-
 }

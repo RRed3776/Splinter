@@ -21,6 +21,8 @@ public class EditHud {
         int y = 25; // below state indicator
 
         // start and end changes text
+        String routeNameText = "Editing " + editSession.getRouteName();
+        textRenderer.drawWithShadow(matrixStack, routeNameText, x, y, 0xFFBB00);
 
         String startText = "START: " + getTriggerHandle(ogStart);
         String endText = "END: " + getTriggerHandle(ogEnd);
@@ -29,13 +31,13 @@ public class EditHud {
         if (!pendingStart.equals(ogStart)) startText += " → " + getTriggerHandle(pendingStart);
         if (!pendingEnd.equals(ogEnd)) endText += " → " + getTriggerHandle(pendingEnd);
 
-        textRenderer.drawWithShadow(matrixStack, startText, x, y, 0xFFBB00);
-        textRenderer.drawWithShadow(matrixStack, endText, x, y + textHeight, 0xFFBB00);
+        textRenderer.drawWithShadow(matrixStack, startText, x, y + textHeight, 0xFFBB00);
+        textRenderer.drawWithShadow(matrixStack, endText, x, y + textHeight * 2, 0xFFBB00);
 
         // confirm message
         if(editSession.hasChanges()) {
             String confirmMessage = "Changes Made. Confirm or Cancel in GUI";
-            textRenderer.drawWithShadow(matrixStack, confirmMessage, x, y + textHeight * 2, 0xFF6A00);
+            textRenderer.drawWithShadow(matrixStack, confirmMessage, x, y + textHeight * 3, 0xFF6A00);
         }
 
         // hotkey tips, gui and selection
@@ -43,12 +45,16 @@ public class EditHud {
         // gui open
         String guiOpenBind = KeyInputHandler.GUI_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
         String guiOpenText = "Open Edit GUI - " + guiOpenBind;
-        textRenderer.drawWithShadow(matrixStack, guiOpenText, x, y + textHeight + gap, 0xFFBB00);
+        textRenderer.drawWithShadow(matrixStack, guiOpenText, x, y + textHeight * 2 + gap, 0xFFBB00);
         // edit select
         // edit mode hint
         String editSelectBind = KeyInputHandler.EDIT_SELECT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
         String editSelectText = "Select Block Pos - " + editSelectBind;
-        textRenderer.drawWithShadow(matrixStack, editSelectText, x, y + textHeight * 2 + gap, 0xFFBB00);
+        textRenderer.drawWithShadow(matrixStack, editSelectText, x, y + textHeight * 3 + gap, 0xFFBB00);
+
+        String toggleEditBind = KeyInputHandler.TOGGLE_EDIT_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
+        String toggleEditText = "Toggle Edit Mode - " + toggleEditBind;
+        textRenderer.drawWithShadow(matrixStack, toggleEditText, x, y + textHeight * 4 + gap, 0xFFBB00);
     }
 
     private static String getTriggerHandle(Trigger trigger) {

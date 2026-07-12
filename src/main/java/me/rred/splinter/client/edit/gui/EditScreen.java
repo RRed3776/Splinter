@@ -4,18 +4,14 @@ import me.rred.splinter.client.edit.EditSession;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.routing.triggers.Trigger;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
-import me.rred.splinter.client.utils.ScissorUtil;
 import me.rred.splinter.client.utils.SplinterColors;
 import me.rred.splinter.client.widgets.SplinterButton;
 import me.rred.splinter.client.widgets.TextBox;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.CallbackI;
 
 public class EditScreen extends Screen {
 
@@ -171,7 +167,7 @@ public class EditScreen extends Screen {
         slider.render(matrixStack, textRenderer, mouseX, mouseY);
 
         // type description
-        typeDescription.render(matrixStack, textRenderer, mouseX, mouseY);
+        typeDescription.render(matrixStack, textRenderer);
 
         // barter cap selector (only visible on TRADE_END trigger)
         selector.render(matrixStack, textRenderer, mouseX, mouseY);

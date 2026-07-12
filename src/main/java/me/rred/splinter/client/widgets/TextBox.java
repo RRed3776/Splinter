@@ -20,7 +20,7 @@ public class TextBox {
         this.messages = messages;
     }
 
-    public void render(MatrixStack matrixStack, TextRenderer textRenderer, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, TextRenderer textRenderer) {
         int lineHeight = textRenderer.fontHeight * 2;
         for (int i = 0; i < messages.size(); i++) {
             textRenderer.drawWithShadow(matrixStack, messages.get(i), x, y + lineHeight * i, SplinterColors.TEXT);
