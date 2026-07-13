@@ -1,6 +1,9 @@
 package me.rred.splinter.client.bartertracking;
 
 import me.rred.splinter.Splinter;
+import me.rred.splinter.client.SplinterClient;
+import me.rred.splinter.client.routing.Route;
+import me.rred.splinter.client.routing.triggers.TradeEndTrigger;
 import net.minecraft.item.ItemStack;
 
 public class BarterTracker {
@@ -31,6 +34,19 @@ public class BarterTracker {
 
     public int getTotalBarters() {
         return totalBarters;
+    }
+
+    public int getBarterCap() {
+        Route activeRoute = SplinterClient.setManager.getActiveSet().getRoute();
+        if (activeRoute.getEndTrigger() instanceof TradeEndTrigger tet) {
+            return tet.getBarterCap();
+        }
+        return 0;
+    }
+
+    public boolean isTradeEnd() {
+        Route activeRoute = SplinterClient.setManager.getActiveSet().getRoute();
+        return activeRoute.getEndTrigger() instanceof TradeEndTrigger;
     }
 
     public int getPearls() {

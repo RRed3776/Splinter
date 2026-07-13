@@ -44,11 +44,11 @@ public class EditSession {
     private BlockPos hoveredPos;
 
 
-    public EditSession(SplinterSet editSet, Route route) {
+    public EditSession(SplinterSet editSet, Route editRoute) {
         this.editSet = editSet;
-        this.editRoute = route;
-        this.ogStart = route.getStartTrigger();
-        this.ogEnd = route.getEndTrigger();
+        this.editRoute = editRoute;
+        this.ogStart = editRoute.getStartTrigger();
+        this.ogEnd = editRoute.getEndTrigger();
         this.pendingStart = ogStart;
         this.pendingEnd = ogEnd;
         this.activeTrigger = pendingStart; // initially edit the start trigger

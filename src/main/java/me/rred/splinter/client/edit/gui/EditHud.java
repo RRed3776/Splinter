@@ -21,7 +21,7 @@ public class EditHud {
         int y = 25; // below state indicator
 
         // start and end changes text
-        String routeNameText = "Editing " + editSession.getRouteName();
+        String routeNameText = "Editing: " + editSession.getRouteName();
         textRenderer.drawWithShadow(matrixStack, routeNameText, x, y, 0xFFBB00);
 
         String startText = "START: " + getTriggerHandle(ogStart);

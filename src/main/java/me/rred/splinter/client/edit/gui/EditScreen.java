@@ -24,6 +24,7 @@ public class EditScreen extends Screen {
     private TriggerTypeSlider slider;
     private TextBox typeDescription;
     private BarterCountSelector selector;
+    private SplinterButton confirmButton;
 
     public EditScreen(EditSession editSession) {
         super(new LiteralText("Edit Route - " + SplinterClient.setManager.getActiveSet().getName()));
@@ -109,13 +110,11 @@ public class EditScreen extends Screen {
 
         int btnStart3X = btnStart2X + (int)(btnWidth * 0.25) + btnWidth;
         // confirm button
-        if (editSession.hasChanges()) {
-            addButton(new SplinterButton(
-                    btnStart3X, btnY, btnWidth, btnHeight,
-                    new LiteralText("CONFIRM"),
-                    editSession::confirm
-            ));
-        }
+        confirmButton = addButton(new SplinterButton(
+                btnStart3X, btnY, btnWidth, btnHeight,
+                new LiteralText("CONFIRM"),
+                editSession::confirm
+        ));
 
         // barter count selection
         int selectorHeight = height / 12;
@@ -172,6 +171,7 @@ public class EditScreen extends Screen {
         // barter cap selector (only visible on TRADE_END trigger)
         selector.render(matrixStack, textRenderer, mouseX, mouseY);
 
+        confirmButton.visible = editSession.hasChanges();
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 

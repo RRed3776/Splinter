@@ -1,5 +1,6 @@
 package me.rred.splinter.client.routing;
 
+import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.routing.triggers.MapTrigger;
 import me.rred.splinter.client.routing.triggers.Trigger;
 import me.rred.splinter.client.sets.SplinterSet;

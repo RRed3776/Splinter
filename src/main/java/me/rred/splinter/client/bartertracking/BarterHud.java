@@ -11,7 +11,8 @@ import net.minecraft.text.LiteralText;
 
 public class BarterHud {
     public static void render(MatrixStack matrixStack, TextRenderer textRenderer) {
-        if (!SplinterClient.timer.isStopped()) {
+        if (!SplinterClient.barterTracker.isTradeEnd()) return;
+        if (!(SplinterClient.timer.isStopped() || SplinterClient.timer.isRunning())) {
             return;
         }
 
@@ -21,17 +22,20 @@ public class BarterHud {
 
         int color = SplinterColors.TEXT;
 
-        String total = "Total Barters: " + SplinterClient.barterTracker.getTotalBarters();
-        String pearls = "Pearls: " + SplinterClient.barterTracker.getPearls();
-        String strings = "String: " + SplinterClient.barterTracker.getStrings();
-        String glowstone = "Glowstone: " + SplinterClient.barterTracker.getGlowstone();
-        String obsidian = "Obsidian: " + SplinterClient.barterTracker.getObsidian();
+        String totalBarters = String.valueOf(SplinterClient.barterTracker.getTotalBarters());
+        String barterCap = String.valueOf(SplinterClient.barterTracker.getBarterCap());
 
-        textRenderer.drawWithShadow(matrixStack, new LiteralText(total), 10, y + textRenderer.fontHeight + 3, color);
-        textRenderer.drawWithShadow(matrixStack, new LiteralText(pearls), 10, y + (textRenderer.fontHeight + 3) * 2, color);
-        textRenderer.drawWithShadow(matrixStack, new LiteralText(strings), 10, y + (textRenderer.fontHeight + 3) * 3, color);
-        textRenderer.drawWithShadow(matrixStack, new LiteralText(glowstone), 10, y + (textRenderer.fontHeight + 3) * 4, color);
-        textRenderer.drawWithShadow(matrixStack, new LiteralText(obsidian), 10, y + (textRenderer.fontHeight + 3) * 5, color);
+        String barterText = "Total Barters: " + totalBarters + "/" + barterCap;
+//        String pearls = "Pearls: " + SplinterClient.barterTracker.getPearls();
+//        String strings = "String: " + SplinterClient.barterTracker.getStrings();
+//        String glowstone = "Glowstone: " + SplinterClient.barterTracker.getGlowstone();
+//        String obsidian = "Obsidian: " + SplinterClient.barterTracker.getObsidian();
+
+        textRenderer.drawWithShadow(matrixStack, new LiteralText(barterText), 10, y + textRenderer.fontHeight + 3, color);
+//        textRenderer.drawWithShadow(matrixStack, new LiteralText(pearls), 10, y + (textRenderer.fontHeight + 3) * 2, color);
+//        textRenderer.drawWithShadow(matrixStack, new LiteralText(strings), 10, y + (textRenderer.fontHeight + 3) * 3, color);
+//        textRenderer.drawWithShadow(matrixStack, new LiteralText(glowstone), 10, y + (textRenderer.fontHeight + 3) * 4, color);
+//        textRenderer.drawWithShadow(matrixStack, new LiteralText(obsidian), 10, y + (textRenderer.fontHeight + 3) * 5, color);
 
     }
 }
