@@ -36,13 +36,15 @@ public class BarterCountSelector {
         int buttonsY = y + 1 + offset;
         decrement = new SplinterSmallButton(x + 1 + offset, buttonsY, scalar,
                 "<", SplinterColors.TEXT, false, () -> {
-            selectedCap--;
+            int newCap = selectedCap - 5;
+            selectedCap = Math.max(newCap, 0);
             sendChanges();
         } );
 
         increment = new SplinterSmallButton(x + width - scalar - 1 - offset, buttonsY, scalar,
                 ">", SplinterColors.TEXT, false, () -> {
-            selectedCap++;
+            int newCap = selectedCap + 5;
+            selectedCap = Math.min(newCap, 250);
             sendChanges();
         });
     }
@@ -90,7 +92,7 @@ public class BarterCountSelector {
 
     public void scroll(double amount) {
         if (amount > 0) {
-            if (selectedCap == 250);
+            if (selectedCap == 250) return;
             selectedCap++;
         } else {
             if (selectedCap == 0) return;

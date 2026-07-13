@@ -21,7 +21,7 @@ import java.net.URL;
 
 public class SplinterUpdateChecker {
     private static final String UPDATE_URL = "https://raw.githubusercontent.com/RRed3776/Splinter/refs/heads/meta/meta.json";
-    private static final String CURRENT_VERSION = "1.1.1";
+    private static final String CURRENT_VERSION = "1.2.0";
     // need to update this, gradle.properties, and meta branch
 
     public synchronized static void check() {

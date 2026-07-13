@@ -156,10 +156,14 @@ public class RoutesScreen extends Screen {
 
         textRenderer.drawWithShadow(matrixStack, "Routes", headerX, headerTextY, textColor);
 
+        // route info text
         int headerX2 = partitions[1] + 5;
         textRenderer.drawWithShadow(matrixStack, "Route Info", headerX2, headerTextY, textColor);
-
         DrawableHelper.fill(matrixStack, screenLeft, headersBottom, screenRight, listTop, headersBorderColor);
+
+        int routeInfoY = listTop + 5;
+        textRenderer.drawWithShadow(matrixStack, "Nothing to see here!", headerX2, routeInfoY, textColor);
+
 
         // sets list
         double scale = client.getWindow().getScaleFactor();

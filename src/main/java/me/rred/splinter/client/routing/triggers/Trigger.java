@@ -8,7 +8,7 @@ public abstract class Trigger {
         MAP(List.of(
                 "Start: triggers on LBP timer start",
                 "(first tick of movement after entering)",
-                "End: throwing pickaxe / dying"
+                "End: dropping pickaxe / dying"
         )),
         BLOCK_BREAK(List.of(
                 "Starts/Stops on",
@@ -20,10 +20,12 @@ public abstract class Trigger {
                 "specified block position"
         )),
         TRADE_START(List.of(
-                "Trade start"
+                "Starts when a piglin barters",
+                "in the specified block position"
         )),
         TRADE_END(List.of(
-                "Trade end"
+                "Stops when you reach",
+                "a specified barter cap"
         ));
 
         private final List<String> description;

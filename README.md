@@ -23,11 +23,14 @@ Fabric API 0.18.0 build 387: https://modrinth.com/mod/fabric-api/versions?g=1.16
 - **MAP** - Default, run when LBP Map starts and stops (pressing button / dropping pickaxe)
 - **BLOCK_BREAK** - must select a valid block, triggers on break. if block is air then the run is invalidated
 - **POSITION** - triggers when player walks into the selected block. can overlap START / END
+- **TRADE_START** - starts on piglin barter in a specified block position
+- **TRADE_END** - ends on reaching a specified barter cap
+
 
 ## Edit Mode Usage
 1. Enter idle mode by pressing the "■" button in the sets list
 2. Press J to enter edit mode
-3. Select a slot (START/END), choose trigger type in the Edit GUI, then select the position in-world
+3. Select a slot (START/END), choose trigger type in the Edit GUI, then select the position in-world if necessary
 4. Confirm changes in the Edit GUI
 5. Run the route - the timer starts and stops based on the selected triggers
 
