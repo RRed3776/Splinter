@@ -18,7 +18,7 @@ public class SplinterStateMachine {
         EDIT
     }
 
-    private State state = State.ACTIVE;
+    private State state = State.IDLE;
     private boolean inMap = false;
     private EditSession editSession = null;
 
@@ -55,9 +55,9 @@ public class SplinterStateMachine {
     public void setEdit() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.world == null || client.player == null) return;
-        if (!StateHud.isHintConsumed()) {
-            StateHud.setHintConsumed(true);
-        }
+//        if (!StateHud.isHintConsumed()) {
+//            StateHud.setHintConsumed(true);
+//        }
         SplinterClient.timer.clear();
 
         state = State.EDIT;

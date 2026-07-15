@@ -11,10 +11,10 @@ public class StateHud {
     private static boolean hintConsumed = false;
     public static void render(MatrixStack matrixStack, TextRenderer textRenderer) {
         String setsOpenBind = KeyInputHandler.GUI_SETS_BIND.getKeyBinding().getBoundKeyLocalizedText().getString();
-        String setsHintText = "enter sets gui with \" " + setsOpenBind + " \"";
-        if (!hintConsumed) {
-            textRenderer.drawWithShadow(matrixStack, setsHintText, 10, 24, 0xFFEE00);
-        }
+//        String setsHintText = "enter sets gui with \" " + setsOpenBind + " \"";
+//        if (!hintConsumed) {
+//            textRenderer.drawWithShadow(matrixStack, setsHintText, 10, 24, 0xFFEE00);
+//        }
 
         String stateText = SplinterClient.ssm.getState().toString();
         String setText = SplinterClient.setManager.getActiveSet().getName();
@@ -35,11 +35,11 @@ public class StateHud {
         }
     }
 
-    public static boolean isHintConsumed() {
-        return hintConsumed;
-    }
-
-    public static void setHintConsumed(boolean value) {
-        hintConsumed = value;
-    }
+//    public static boolean isHintConsumed() {
+//        return hintConsumed;
+//    }
+//
+//    public static void setHintConsumed(boolean value) {
+//        hintConsumed = value;
+//    }
 }

@@ -29,7 +29,7 @@ public class KeyInputHandler {
 
     public static void register() {
         GUI_SETS_BIND = new KeyBind(GUI_SETS, GLFW.GLFW_KEY_B, () -> {
-            StateHud.setHintConsumed(true);
+//            StateHud.setHintConsumed(true);
             SetsScreen.toggle();
         });
         GUI_EDIT_BIND = new KeyBind(GUI_EDIT, GLFW.GLFW_KEY_N, () -> {
