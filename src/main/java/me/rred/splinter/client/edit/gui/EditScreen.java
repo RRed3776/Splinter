@@ -13,6 +13,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.List;
+
 public class EditScreen extends Screen {
 
     private int screenTop, screenBottom, screenLeft, screenRight;
@@ -172,7 +174,49 @@ public class EditScreen extends Screen {
         selector.render(matrixStack, textRenderer, mouseX, mouseY);
 
         confirmButton.visible = editSession.hasChanges();
+        confirmButton.active = !editSession.needsPos();
+
         super.render(matrixStack, mouseX, mouseY, delta);
+
+        if (!confirmButton.active && confirmButton.isHovered()) {
+
+            renderConfirmTip(matrixStack, mouseX, mouseY, "trigger positions must be set!");
+        }
+    }
+
+    public void renderConfirmTip(MatrixStack matrixStack, int mouseX, int mouseY, String text) {
+        matrixStack.push();
+        matrixStack.translate(0, 0, 1);
+
+        int middlePanelColor = SplinterColors.MIDDLE_PANEL;
+        int x = mouseX + 5;
+        int y = mouseY + 10;
+        int textOffset = 3;
+        int width = textRenderer.getWidth(text) + (2 * (textOffset));
+        int height = textRenderer.fontHeight + (2 * (textOffset));
+
+        int x2 = x + width;
+        if (x2 >= this.width) {
+            x2 = mouseX - 3;
+            x = x2 - width;
+        }
+
+        int y2 = y + height;
+        fill(matrixStack, x, y, x2, y2, middlePanelColor);
+
+        // outer border, screen is inside the border
+        int outerBorderColor = SplinterColors.BORDER;
+        // top
+        fill(matrixStack, x - borderWidth, y - borderWidth, x2 + borderWidth, y, outerBorderColor);
+        // bottom
+        fill(matrixStack, x - borderWidth, y2, x2 + borderWidth, y2 + borderWidth, outerBorderColor);
+        // left
+        fill(matrixStack, x - borderWidth, y, x, y2, outerBorderColor);
+        // right
+        fill(matrixStack, x2, y, x2 + borderWidth, y2, outerBorderColor);
+
+        textRenderer.drawWithShadow(matrixStack, text, x + textOffset, y + textOffset, textColor);
+        matrixStack.pop();
     }
 
     @Override

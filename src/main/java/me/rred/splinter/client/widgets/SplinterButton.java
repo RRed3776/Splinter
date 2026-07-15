@@ -23,13 +23,15 @@ public class SplinterButton extends AbstractPressableButtonWidget {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        if (!active) return;
+        if (!visible) return;
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextRenderer textRenderer = minecraftClient.textRenderer;
 
         int borderColor = isHovered() ? SplinterColors.BORDER_HOVER : SplinterColors.BUTTON_BORDER;
-        int fillColor = SplinterColors.BUTTON_FILL;
-        int textColor = SplinterColors.TEXT;
+        borderColor = this.active ? borderColor : SplinterColors.BUTTON_BORDER;
+
+        int fillColor = this.active ? SplinterColors.BUTTON_FILL : SplinterColors.BUTTON_INACTIVE;
+        int textColor = this.active ? SplinterColors.TEXT : SplinterColors.SUB_TEXT;
 
         // border
         fill(matrices, x, y, x + width, y + height, borderColor);
@@ -39,5 +41,9 @@ public class SplinterButton extends AbstractPressableButtonWidget {
         RenderSystem.enableDepthTest();
 
         this.drawCenteredText(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, textColor);
+    }
+
+    public void renderHoverText(MatrixStack matrixStack, int mouseX, int mouseY) {
+
     }
 }

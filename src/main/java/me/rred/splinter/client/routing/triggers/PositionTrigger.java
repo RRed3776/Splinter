@@ -3,7 +3,7 @@ package me.rred.splinter.client.routing.triggers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
-public class PositionTrigger extends Trigger {
+public class PositionTrigger extends Trigger implements PositionalTrigger {
     private BlockPos pos;
     public boolean primed = true;
 

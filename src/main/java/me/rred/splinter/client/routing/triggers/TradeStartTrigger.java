@@ -2,7 +2,7 @@ package me.rred.splinter.client.routing.triggers;
 
 import net.minecraft.util.math.BlockPos;
 
-public class TradeStartTrigger extends Trigger {
+public class TradeStartTrigger extends Trigger implements PositionalTrigger {
     private BlockPos pos;
 
     public TradeStartTrigger(TriggerSlot triggerSlot, BlockPos pos) {
@@ -33,4 +33,8 @@ public class TradeStartTrigger extends Trigger {
     public TriggerType getType() { return TriggerType.TRADE_START;}
 
     public BlockPos getPos() { return pos; }
+
+    public void setPos(BlockPos pos) {
+        this.pos = pos;
+    }
 }

@@ -31,6 +31,7 @@ public class SplinterColors {
     public static int HIGHLIGHTED_TEXT = TEAL_LIGHT;
 
     public static int BUTTON_FILL = GRAY_BLUE;
+    public static int BUTTON_INACTIVE = DEEP_NAVY;
     public static int BUTTON_BORDER = CHARCOAL;
 
     public static int MODAL_BG = CHARCOAL_BLUE;

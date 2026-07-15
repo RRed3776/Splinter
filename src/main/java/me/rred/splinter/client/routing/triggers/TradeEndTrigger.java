@@ -1,6 +1,6 @@
 package me.rred.splinter.client.routing.triggers;
 
-public class TradeEndTrigger extends Trigger {
+public class TradeEndTrigger extends Trigger{
     private int barterCap;
 
     public TradeEndTrigger(Trigger.TriggerSlot triggerSlot, int barterCap) {

@@ -131,19 +131,24 @@ public class EditSession {
             case BLOCK_BREAK -> {
                 if (getActiveSlot() == Trigger.TriggerSlot.START) {
                     activeTrigger = new BlockBreakTrigger(Trigger.TriggerSlot.START, null);
+                    pendingStart = activeTrigger.copy();
                 } else {
                     activeTrigger = new BlockBreakTrigger(Trigger.TriggerSlot.END, null);
+                    pendingEnd = activeTrigger.copy();
                 }
             }
             case POSITION -> {
                 if (getActiveSlot() == Trigger.TriggerSlot.START) {
                     activeTrigger = new PositionTrigger(Trigger.TriggerSlot.START, null);
+                    pendingStart = activeTrigger.copy();
                 } else {
                     activeTrigger = new PositionTrigger(Trigger.TriggerSlot.END, null);
+                    pendingEnd = activeTrigger.copy();
                 }
             }
             case TRADE_START -> {
                 activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.START, null);
+                pendingStart = activeTrigger.copy();
             }
             case TRADE_END -> {
                 activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 100);
@@ -202,6 +207,18 @@ public class EditSession {
     public boolean hasChanges() {
         return !pendingStart.equals(ogStart)
                 || !pendingEnd.equals(ogEnd);
+    }
+
+    public boolean needsPos() {
+        boolean startNeeds = false;
+        boolean endNeeds = false;
+        if (pendingStart instanceof PositionalTrigger pts) {
+            startNeeds = pts.getPos() == null;
+        }
+        if (pendingEnd instanceof PositionalTrigger pte) {
+            endNeeds = pte.getPos() == null;
+        }
+        return startNeeds || endNeeds;
     }
 
     public Trigger getOgStart() {

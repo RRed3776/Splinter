@@ -63,15 +63,15 @@ public class EditHud {
             case MAP -> "MAP";
             case BLOCK_BREAK -> {
                 BlockPos pos = ((BlockBreakTrigger) trigger).getPos();
-                yield pos != null ? "BREAK (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "BREAK (unset)";
+                yield pos != null ? "BLOCK_BREAK (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "BREAK (unset)";
             }
             case POSITION -> {
                 BlockPos pos = ((PositionTrigger) trigger).getPos();
-                yield pos != null ? "POS (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "POS (unset)";
+                yield pos != null ? "POSITION (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "POSITION (unset)";
             }
             case TRADE_START -> {
                 BlockPos pos = ((TradeStartTrigger) trigger).getPos();
-                yield pos != null ? " TRADE_START (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "POS (unset)";
+                yield pos != null ? " TRADE_START (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" : "TRADE_START (unset)";
             }
             case TRADE_END -> {
                 int barterCap = ((TradeEndTrigger) trigger).getBarterCap();

@@ -3,7 +3,7 @@ package me.rred.splinter.client.routing.triggers;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 
-public class BlockBreakTrigger extends Trigger{
+public class BlockBreakTrigger extends Trigger implements PositionalTrigger {
     private BlockPos pos;
 
     public BlockBreakTrigger(TriggerSlot triggerSlot, BlockPos pos) {
