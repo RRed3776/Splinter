@@ -38,8 +38,6 @@ public class TriggerTypeSlider {
         types = new ArrayList<>(List.of(Trigger.TriggerType.values()));
         if (slot == Trigger.TriggerSlot.START) {
             types.remove(Trigger.TriggerType.TRADE_END);
-        } else {
-            types.remove(Trigger.TriggerType.TRADE_START);
         }
     }
 

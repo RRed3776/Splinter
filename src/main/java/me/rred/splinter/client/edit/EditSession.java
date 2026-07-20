@@ -67,7 +67,7 @@ public class EditSession {
 
         switch (getActiveType()) {
             case MAP -> {
-                if (getActiveSlot() == Trigger.TriggerSlot.START) {
+                if (activeIsStart()) {
                     pendingStart = new MapTrigger(Trigger.TriggerSlot.START);
                 } else {
                     pendingEnd = new MapTrigger(Trigger.TriggerSlot.END);
@@ -76,7 +76,7 @@ public class EditSession {
             case BLOCK_BREAK -> {
                 if (hoveredPos == null) return;
                 // prevent selection if position already in use
-                Trigger other = getActiveSlot() == Trigger.TriggerSlot.START ? pendingEnd : pendingStart;
+                Trigger other = activeIsStart() ? pendingEnd : pendingStart;
                 if (other instanceof BlockBreakTrigger bt && hoveredPos.equals(bt.getPos())) {
                     client.player.sendMessage( new LiteralText("block already used by other trigger")
                             .styled(s -> s.withColor(Formatting.RED)), false);
@@ -88,7 +88,7 @@ public class EditSession {
                     return;
                 }
 
-                if (getActiveSlot() == Trigger.TriggerSlot.START) {
+                if (activeIsStart()) {
                     pendingStart = new BlockBreakTrigger(Trigger.TriggerSlot.START, hoveredPos);
                 } else {
                     pendingEnd = new BlockBreakTrigger(Trigger.TriggerSlot.END, hoveredPos);
@@ -96,7 +96,7 @@ public class EditSession {
             }
             case POSITION -> {
                 if (hoveredPos == null) return;
-                if (getActiveSlot() == Trigger.TriggerSlot.START) {
+                if (activeIsStart()) {
                     pendingStart = new PositionTrigger(Trigger.TriggerSlot.START, hoveredPos);
                 } else {
                     pendingEnd = new PositionTrigger(Trigger.TriggerSlot.END, hoveredPos);
@@ -104,7 +104,11 @@ public class EditSession {
             }
             case TRADE_START -> {
                 if (hoveredPos == null) return;
-                pendingStart = new TradeStartTrigger(Trigger.TriggerSlot.START, hoveredPos);
+                if (activeIsStart()) {
+                    pendingStart = new TradeStartTrigger(Trigger.TriggerSlot.START, hoveredPos);
+                } else {
+                    pendingEnd = new TradeStartTrigger(Trigger.TriggerSlot.END, hoveredPos);
+                }
             }
             case TRADE_END -> {
                 pendingEnd = activeTrigger.copy();
@@ -120,7 +124,7 @@ public class EditSession {
         if (activeTrigger == null) return;
         switch (type) {
             case MAP -> {
-                if (getActiveSlot() == Trigger.TriggerSlot.START) {
+                if (activeIsStart()) {
                     activeTrigger = new MapTrigger(Trigger.TriggerSlot.START);
                     pendingStart = activeTrigger.copy();
                 } else {
@@ -129,7 +133,7 @@ public class EditSession {
                 }
             }
             case BLOCK_BREAK -> {
-                if (getActiveSlot() == Trigger.TriggerSlot.START) {
+                if (activeIsStart()) {
                     activeTrigger = new BlockBreakTrigger(Trigger.TriggerSlot.START, null);
                     pendingStart = activeTrigger.copy();
                 } else {
@@ -138,7 +142,7 @@ public class EditSession {
                 }
             }
             case POSITION -> {
-                if (getActiveSlot() == Trigger.TriggerSlot.START) {
+                if (activeIsStart()) {
                     activeTrigger = new PositionTrigger(Trigger.TriggerSlot.START, null);
                     pendingStart = activeTrigger.copy();
                 } else {
@@ -147,8 +151,13 @@ public class EditSession {
                 }
             }
             case TRADE_START -> {
-                activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.START, null);
-                pendingStart = activeTrigger.copy();
+                if (activeIsStart()) {
+                    activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.START, null);
+                    pendingStart = activeTrigger.copy();
+                } else {
+                    activeTrigger = new TradeStartTrigger(Trigger.TriggerSlot.END, null);
+                    pendingEnd = activeTrigger.copy();
+                }
             }
             case TRADE_END -> {
                 activeTrigger = new TradeEndTrigger(Trigger.TriggerSlot.END, 100);
@@ -240,6 +249,12 @@ public class EditSession {
     public Trigger.TriggerSlot getActiveSlot() {
         return activeTrigger == null ? Trigger.TriggerSlot.START : activeTrigger.getTriggerSlot();
     }
+
+    public boolean activeIsStart() {
+        if (activeTrigger == null) return false;
+        return activeTrigger.isStart();
+    }
+
 
     public Trigger.TriggerType getActiveType() {
         return activeTrigger == null ? Trigger.TriggerType.MAP : activeTrigger.getType();

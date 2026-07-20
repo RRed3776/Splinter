@@ -154,6 +154,11 @@ public class RouteEngine {
             start.onFired();
             checkTriggers(route);
         }
+        if (end instanceof TradeStartTrigger tst && (tst.matches(pos) || tst.matches(pos.up()))) {
+            end.onFired();
+            checkTriggers(route);
+        }
+
         if (end instanceof TradeEndTrigger tet) {
             int totalBarters = SplinterClient.barterTracker.getTotalBarters();
             if (totalBarters == tet.getBarterCap()) {

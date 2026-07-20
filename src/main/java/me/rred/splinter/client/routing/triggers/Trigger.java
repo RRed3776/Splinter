@@ -1,5 +1,6 @@
 package me.rred.splinter.client.routing.triggers;
 
+import net.minecraft.item.TridentItem;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -73,11 +74,11 @@ public abstract class Trigger {
         return triggerSlot;
     }
 
-
-
-    public boolean slotIsStart(Trigger trigger) {
-        return trigger.getTriggerSlot() == TriggerSlot.START;
+    public void setTriggerSlot(TriggerSlot triggerSlot) {
+        this.triggerSlot = triggerSlot;
     }
+
+    public boolean isStart() {return triggerSlot == TriggerSlot.START;}
 
     public abstract boolean equals(Object obj);
 }
