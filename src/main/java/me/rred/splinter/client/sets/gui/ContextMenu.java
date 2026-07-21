@@ -32,16 +32,13 @@ public class ContextMenu {
     private static final int WIDTH = 60;
     private static final int ITEM_HEIGHT = 12;
     private boolean visible = false;
-    private SplinterSet set;
+    private String label;
     private int hoveredOption = -1;
 
-    public void open(int x, int y, int screenBottom, SplinterSet set, List<Option> options) {
-        if (set == null) {
-            return;
-        }
+    public void open(int x, int y, int screenBottom, String label, List<Option> options) {
         this.x = x;
         this.y = y;
-        this.set = set;
+        this.label = label;
         this.options = options;
         shiftMenu(screenBottom);
         this.visible = true;
@@ -58,7 +55,7 @@ public class ContextMenu {
 
         // name header
         int headerColor = SplinterColors.alpha(SplinterColors.SOFT_BLUE, 0xE0);
-        textRenderer.drawWithShadow(matrixStack, TruncateText.truncate(set.getName(), WIDTH - 3, textRenderer), x + 3, y + 2, headerColor);
+        textRenderer.drawWithShadow(matrixStack, TruncateText.truncate(label, WIDTH - 3, textRenderer), x + 3, y + 2, headerColor);
 
         // header divider
         DrawableHelper.fill(matrixStack, x, y + ITEM_HEIGHT, x + WIDTH, y + ITEM_HEIGHT + 1, disabledColor);
@@ -86,7 +83,6 @@ public class ContextMenu {
 
     public void close() {
         visible = false;
-        set = null;
     }
 
     public boolean isVisible() {

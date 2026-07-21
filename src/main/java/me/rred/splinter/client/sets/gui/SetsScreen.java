@@ -44,6 +44,7 @@ public class SetsScreen extends Screen {
     private TimesListPanel timesListPanelA;
     private TimesListPanel timesListPanelB;
     private ContextMenu contextMenu = new ContextMenu();
+    private ContextMenu routeOptions = new ContextMenu();
     private ScreenMenu screenMenu = new ScreenMenu();
     private final int borderWidth = 1;
     private final int[] partitions = new int[5];
@@ -132,7 +133,7 @@ public class SetsScreen extends Screen {
                             }
                             else {
                                 // context menu
-                                contextMenu.open(lastClickX, lastClickY, height, set, List.of(
+                                contextMenu.open(lastClickX, lastClickY, height, set.getName(), List.of(
                                         new ContextMenu.Option("Set as A", () -> {
                                             SplinterClient.setManager.setDisplayedSetA(set);
                                             init();
@@ -143,10 +144,21 @@ public class SetsScreen extends Screen {
                                             init();
                                         }, SplinterColors.TEXT,
                                                 SplinterClient.setManager.getDisplayedSetB() != set),
-                                        new ContextMenu.Option("Edit Route", () -> {
-                                            SplinterClient.ssm.setEdit();
-                                            SetsScreen.toggle();
-                                        }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
+                                        new ContextMenu.Option("Route Options", () -> {
+//                                            SplinterClient.ssm.setEdit();
+//                                            SetsScreen.toggle();
+                                            // probably a better way to do this, revisit context menu building later
+                                            // also should refactor the active parameter and maybe restructure option building
+                                            routeOptions.open(lastClickX + 61, lastClickY, height, set.getRoute().getName(), List.of(
+                                                    new ContextMenu.Option("Edit Route", () -> {
+                                                        SplinterClient.ssm.setEdit();
+                                                        SetsScreen.toggle();
+                                                    }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
+                                                    new ContextMenu.Option("Rename Route", () -> {
+                                                        // open rename modal
+                                                    }, SplinterColors.TEXT, true)
+                                            ));
+                                        }, SplinterColors.TEXT, true),
                                         new ContextMenu.Option("Rename", () -> {
                                             activeModal = new InputModal("Rename Set", () -> {
                                                 if(activeModal instanceof InputModal im) {
@@ -376,9 +388,15 @@ public class SetsScreen extends Screen {
         timesListPanelB.render(matrixStack, textRenderer, mouseX, mouseY, false);
         ScissorUtil.disable();
 
+        // make a render stack to simplify this
+
         // render context menu
         if (contextMenu.isVisible()) {
             contextMenu.render(matrixStack, textRenderer, mouseX, mouseY);
+        }
+
+        if (routeOptions.isVisible()) {
+            routeOptions.render(matrixStack, textRenderer, mouseX, mouseY);
         }
 
         // render screen menu
@@ -444,6 +462,13 @@ public class SetsScreen extends Screen {
         if (contextMenu.isVisible()) {
             if (contextMenu.handleClick(mouseX, mouseY)) return true;
             contextMenu.close();
+            routeOptions.close();
+            return true;
+        }
+
+        if (routeOptions.isVisible()) {
+            if (routeOptions.handleClick(mouseX, mouseY)) return true;
+            routeOptions.close();
             return true;
         }
 
