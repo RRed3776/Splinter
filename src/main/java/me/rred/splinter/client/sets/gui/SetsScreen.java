@@ -97,114 +97,10 @@ public class SetsScreen extends Screen {
         setsListPanel = new SetsListPanel(screenLeft, listTop - borderWidth, partitionWidth, listHeight, sets,
                 (set, button) -> {
                         if (button == 0) { // left click
-                            // refresh edit session or send confirm message
-                            SplinterSet currActiveSet = SplinterClient.setManager.getActiveSet();
-                            if (currActiveSet != set) {
-                                if (SplinterClient.ssm.isEditingWithChanges()) {
-                                    // editing with changes
-                                    client.player.sendMessage(new LiteralText("confirm or cancel changes in GUI")
-                                            .styled(s -> s.withColor(Formatting.YELLOW)), false);
-                                }
-                                else if (SplinterClient.ssm.isEditing()) {
-                                    // just editing, refresh edit session
-                                    SplinterClient.setManager.setActiveSet(set);
-                                    SplinterClient.ssm.refreshEditSession();
-                                }
-                                else if (SplinterClient.timer.isRunning()) {
-                                    // timer is running, invalidate the run then switch
-                                    SplinterClient.routeEngine.invalidateRun();
-                                    SplinterClient.setManager.setActiveSet(set);
-                                }
-                                else {
-                                    // swap set if it's not already active
-                                    SplinterClient.setManager.setActiveSet(set);
-                                }
-                            }
+                            setsPanelLeftClick(set);
                         }
                         else if (button == 1) { // right click logic
-                            // RC + SHIFT displays, RC opens context menu
-                            if (hasShiftDown() && setA == null && setB != set) {
-                                SplinterClient.setManager.setDisplayedSetA(set);
-                                init();
-                            }
-                            else if (hasShiftDown() && setB == null && setA != set) {
-                                SplinterClient.setManager.setDisplayedSetB(set);
-                                init();
-                            }
-                            else {
-                                // context menu
-                                contextMenu.open(lastClickX, lastClickY, height, set.getName(), List.of(
-                                        new ContextMenu.Option("Set as A", () -> {
-                                            SplinterClient.setManager.setDisplayedSetA(set);
-                                            init();
-                                        }, SplinterColors.TEXT,
-                                                SplinterClient.setManager.getDisplayedSetA() != set),
-                                        new ContextMenu.Option("Set as B", () -> {
-                                            SplinterClient.setManager.setDisplayedSetB(set);
-                                            init();
-                                        }, SplinterColors.TEXT,
-                                                SplinterClient.setManager.getDisplayedSetB() != set),
-                                        new ContextMenu.Option("Route Options", () -> {
-//                                            SplinterClient.ssm.setEdit();
-//                                            SetsScreen.toggle();
-                                            // probably a better way to do this, revisit context menu building later
-                                            // also should refactor the active parameter and maybe restructure option building
-                                            routeOptions.open(lastClickX + 61, lastClickY, height, set.getRoute().getName(), List.of(
-                                                    new ContextMenu.Option("Edit Route", () -> {
-                                                        SplinterClient.ssm.setEdit();
-                                                        SetsScreen.toggle();
-                                                    }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
-                                                    new ContextMenu.Option("Rename Route", () -> {
-                                                        // open rename modal
-                                                    }, SplinterColors.TEXT, true)
-                                            ));
-                                        }, SplinterColors.TEXT, true),
-                                        new ContextMenu.Option("Rename", () -> {
-                                            activeModal = new InputModal("Rename Set", () -> {
-                                                if(activeModal instanceof InputModal im) {
-                                                    String name = im.getTextInput();
-                                                    if (name == null || name.isEmpty()) {
-                                                        im.setPopUp(false);
-                                                    }
-                                                    else if (sets.contains(new SplinterSet(name, new Route()))) {
-                                                        im.setPopUp(true);
-                                                    } else {
-                                                        set.renameSet(name);
-                                                        activeModal.closeGuard = false;
-                                                        activeModal = null;
-                                                        init();
-                                                    }
-                                                }
-                                            });
-                                            String setName = set.getName();
-                                            activeModal.setSubmessage(setName);
-                                            activeModal.openModal(width, height);
-                                        }, SplinterColors.TEXT, true),
-                                        new ContextMenu.Option("Clear", () -> {
-                                            activeModal = new ConfirmModal("Clear \"" + set.getName() + "\"?", () -> {
-                                                set.clearSet();
-                                                activeModal = null;
-                                                init();
-                                            });
-                                            activeModal.openModal(width, height);
-                                        }, SplinterColors.TEXT, !set.isEmpty()),
-                                        new ContextMenu.Option("Copy", () -> {
-                                            SplinterSet copy = new SplinterSet("Copy of " + set.getName(), set.getRoute());
-                                            SplinterClient.setManager.addSet(copy);
-                                            init();
-                                            },
-                                                SplinterColors.TEXT,
-                                                true),
-                                        new ContextMenu.Option("Delete", () -> {
-                                            activeModal = new ConfirmModal("Delete \"" + set.getName() + "\"?", () -> {
-                                                SplinterClient.setManager.deleteSet(set);
-                                                activeModal = null;
-                                                init();
-                                            });
-                                            activeModal.openModal(width, height);
-                                        }, 0xFF5555, !(sets.size() == 1))
-                                ));
-                            }
+                            setsPanelRightClick(set, sets);
                         }
                     }
                 );
@@ -289,7 +185,6 @@ public class SetsScreen extends Screen {
                 }
         ));
 
-
         if (activeModal != null) activeModal.openModal(width, height);
 
         // should replace this logic with the active checking later
@@ -319,6 +214,121 @@ public class SetsScreen extends Screen {
         exitButtonB.visible = setB != null;
         exitButtons.add(exitButtonB);
     }
+
+    private void setsPanelLeftClick(SplinterSet set) {
+        SplinterSet currActiveSet = SplinterClient.setManager.getActiveSet();
+        if (currActiveSet != set) {
+            if (SplinterClient.ssm.isEditingWithChanges()) {
+                // editing with changes
+                client.player.sendMessage(new LiteralText("confirm or cancel changes in GUI")
+                        .styled(s -> s.withColor(Formatting.YELLOW)), false);
+            }
+            else if (SplinterClient.ssm.isEditing()) {
+                // just editing, refresh edit session
+                SplinterClient.setManager.setActiveSet(set);
+                SplinterClient.ssm.refreshEditSession();
+            }
+            else if (SplinterClient.timer.isRunning()) {
+                // timer is running, invalidate the run then switch
+                SplinterClient.routeEngine.invalidateRun();
+                SplinterClient.setManager.setActiveSet(set);
+            }
+            else {
+                // swap set if it's not already active
+                SplinterClient.setManager.setActiveSet(set);
+            }
+        }
+    }
+
+    private void setsPanelRightClick(SplinterSet set, List<SplinterSet> sets) {
+        // RC + SHIFT displays, RC opens context menu
+        if (hasShiftDown() && setA == null && setB != set) {
+            SplinterClient.setManager.setDisplayedSetA(set);
+            init();
+        }
+        else if (hasShiftDown() && setB == null && setA != set) {
+            SplinterClient.setManager.setDisplayedSetB(set);
+            init();
+        }
+        else {
+            // context menu
+            contextMenu.open(lastClickX, lastClickY, height, set.getName(), List.of(
+                    new ContextMenu.Option("Set as A", () -> {
+                        SplinterClient.setManager.setDisplayedSetA(set);
+                        init();
+                    }, SplinterColors.TEXT,
+                            SplinterClient.setManager.getDisplayedSetA() != set),
+                    new ContextMenu.Option("Set as B", () -> {
+                        SplinterClient.setManager.setDisplayedSetB(set);
+                        init();
+                    }, SplinterColors.TEXT,
+                            SplinterClient.setManager.getDisplayedSetB() != set),
+                    new ContextMenu.Option("Route Options", () -> {
+                        // probably a better way to do this, revisit context menu building later
+                        // also should refactor the active parameter and maybe restructure option building
+                        int[] pos = contextMenu.getPos(); // x, y of context menu
+                        routeOptions.open(pos[0] + 80, pos[1] + 37, height, set.getRoute().getName(), List.of(
+                                new ContextMenu.Option("Edit", () -> {
+                                    SplinterClient.ssm.setEdit();
+                                    SetsScreen.toggle();
+                                }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
+                                new ContextMenu.Option("Swap", () -> {
+                                    // do something to swap routes
+                                }, SplinterColors.TEXT, true),
+                                new ContextMenu.Option("Rename", () -> {
+                                    // open rename modal
+                                }, SplinterColors.TEXT, true)
+                        ));
+                    }, SplinterColors.TEXT, true),
+                    new ContextMenu.Option("Rename", () -> {
+                        activeModal = new InputModal("Rename Set", () -> {
+                            if(activeModal instanceof InputModal im) {
+                                String name = im.getTextInput();
+                                if (name == null || name.isEmpty()) {
+                                    im.setPopUp(false);
+                                }
+                                else if (sets.contains(new SplinterSet(name, new Route()))) {
+                                    im.setPopUp(true);
+                                } else {
+                                    set.renameSet(name);
+                                    activeModal.closeGuard = false;
+                                    activeModal = null;
+                                    init();
+                                }
+                            }
+                        });
+                        String setName = set.getName();
+                        activeModal.setSubmessage(setName);
+                        activeModal.openModal(width, height);
+                    }, SplinterColors.TEXT, true),
+                    new ContextMenu.Option("Clear", () -> {
+                        activeModal = new ConfirmModal("Clear \"" + set.getName() + "\"?", () -> {
+                            set.clearSet();
+                            activeModal = null;
+                            init();
+                        });
+                        activeModal.openModal(width, height);
+                    }, SplinterColors.TEXT, !set.isEmpty()),
+                    new ContextMenu.Option("Copy", () -> {
+                        SplinterSet copy = new SplinterSet("Copy of " + set.getName(), set.getRoute());
+                        SplinterClient.setManager.addSet(copy);
+                        init();
+                    },
+                            SplinterColors.TEXT,
+                            true),
+                    new ContextMenu.Option("Delete", () -> {
+                        activeModal = new ConfirmModal("Delete \"" + set.getName() + "\"?", () -> {
+                            SplinterClient.setManager.deleteSet(set);
+                            activeModal = null;
+                            init();
+                        });
+                        activeModal.openModal(width, height);
+                    }, 0xFF5555, !(sets.size() == 1))
+            ));
+        }
+    }
+
+
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
@@ -452,23 +462,14 @@ public class SetsScreen extends Screen {
             return pressed;
         }
 
-        if (screenMenu.isVisible()) {
-            if (screenMenu.handleClick(mouseX, mouseY)) return true;
-            screenMenu.close();
+        if (screenMenu.handleClick(mouseX, mouseY)) { return true; }
+
+        // context menu gets priority over setlist but not route options
+        if (routeOptions.handleClick()) {
             return true;
         }
 
-        // context menu gets priority over setlist
-        if (contextMenu.isVisible()) {
-            if (contextMenu.handleClick(mouseX, mouseY)) return true;
-            contextMenu.close();
-            routeOptions.close();
-            return true;
-        }
-
-        if (routeOptions.isVisible()) {
-            if (routeOptions.handleClick(mouseX, mouseY)) return true;
-            routeOptions.close();
+        if (contextMenu.handleClick()) {
             return true;
         }
 

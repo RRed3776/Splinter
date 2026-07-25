@@ -70,6 +70,6 @@ public class TimesListPanel extends ListPanel {
             set.removeTime(hoveredDelIndex);
             return true;
         }
-        return false;
+        return true;
     }
 }

@@ -25,11 +25,15 @@ public class ContextMenu {
             this.color = color;
             this.active = active;
         }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     private List<Option> options = new ArrayList<>();
     private int x, y;
-    private static final int WIDTH = 60;
+    private static final int WIDTH = 80;
     private static final int ITEM_HEIGHT = 12;
     private boolean visible = false;
     private String label;
@@ -89,13 +93,22 @@ public class ContextMenu {
         return visible;
     }
 
-    public boolean handleClick(double mouseX, double mouseY) {
+    public boolean handleClick() {
+        if (!visible) return false;
         if (hoveredOption >= 0 && hoveredOption < options.size()) {
-            options.get(hoveredOption).action.run();
-            close();
+            Option selected = options.get(hoveredOption);
+            selected.action.run();
+            if (!selected.getLabel().equals("Route Options")) {
+                close();
+            }
             return true;
         }
+        close();
         return false;
+    }
+
+    public int[] getPos() {
+        return new int[]{x, y};
     }
 
     private void shiftMenu(int screenBottom) {
