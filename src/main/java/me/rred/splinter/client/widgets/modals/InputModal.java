@@ -89,6 +89,14 @@ public class InputModal extends SplinterModal {
                 new LiteralText("CONFIRM"),
                 onConfirm
         );
+
+        input.setChangedListener(this::updateConfirmButtonState);
+        updateConfirmButtonState(input.getText());
+    }
+
+    private void updateConfirmButtonState(String text) {
+        if (confirmButton == null) return;
+        confirmButton.active = !text.trim().isEmpty();
     }
 
     public void render(MatrixStack matrixStack, TextRenderer textRenderer,

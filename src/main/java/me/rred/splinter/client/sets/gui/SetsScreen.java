@@ -328,8 +328,6 @@ public class SetsScreen extends Screen {
         }
     }
 
-
-
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
 
@@ -346,11 +344,6 @@ public class SetsScreen extends Screen {
         int headerWidth = partitionWidth - exitScalar - 9;
         int headersBorderColor = SplinterColors.BORDER_OTHER;
         fill(matrixStack, screenLeft, headerBottom, screenRight,headerBottom + borderWidth, headersBorderColor);
-
-//        // menu bar
-//        int menuBarColor = SplinterColors.alpha(SplinterColors.MENU_BAR, 0xE0);;
-//        fill(matrixStack, screenLeft, menuBarTop, screenRight, menuBarBottom, menuBarColor);
-//        fill(matrixStack, screenLeft, menuBarBottom, screenRight,  menuBarBottom + borderWidth, headersBorderColor);
 
         // middle panel (sets, times, stats)
         int middlePanelColor = SplinterColors.alpha(SplinterColors.MIDDLE_PANEL, 0xE0); // 88% opacity
@@ -386,7 +379,6 @@ public class SetsScreen extends Screen {
         }
 
         // render middle ListPanels
-
         double scale = client.getWindow().getScaleFactor();
         int scissorWidth = screenRight - screenLeft;
         int scissorHeight = listBottom - listTop;
@@ -462,16 +454,11 @@ public class SetsScreen extends Screen {
             return pressed;
         }
 
-        if (screenMenu.handleClick(mouseX, mouseY)) { return true; }
+        if (screenMenu.handleClick(mouseX, mouseY)) return true;
 
         // context menu gets priority over setlist but not route options
-        if (routeOptions.handleClick()) {
-            return true;
-        }
-
-        if (contextMenu.handleClick()) {
-            return true;
-        }
+        if (routeOptions.handleClick()) return true;
+        if (contextMenu.handleClick()) return true;
 
         for (SplinterSmallButton exitButton : exitButtons) {
             if (exitButton != null && exitButton.handleClick(mouseX, mouseY, button)) return true;

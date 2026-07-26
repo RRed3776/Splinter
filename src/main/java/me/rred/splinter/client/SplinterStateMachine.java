@@ -62,8 +62,10 @@ public class SplinterStateMachine {
 
         state = State.EDIT;
         SplinterSet set = SplinterClient.setManager.getActiveSet();
-        Route route = set.getEditableRoute();
-        editSession = new EditSession(set, route);
+        SplinterSet.EditableRoute editable = set.getEditableRoute();
+        Route route = editable.getRoute();
+        boolean isNew = editable.isNew();
+        editSession = new EditSession(set, route, isNew);
         ClientEventEmitter.setCreative();
         // display set UI
     }
@@ -71,8 +73,10 @@ public class SplinterStateMachine {
     public void refreshEditSession() {
         if (state == State.EDIT) {
             SplinterSet set = SplinterClient.setManager.getActiveSet();
-            Route route = set.getEditableRoute();
-            editSession = new EditSession(set, route);
+            SplinterSet.EditableRoute editable = set.getEditableRoute();
+            Route route = editable.getRoute();
+            boolean isNew = editable.isNew();
+            editSession = new EditSession(set, route, isNew);
         }
     }
 

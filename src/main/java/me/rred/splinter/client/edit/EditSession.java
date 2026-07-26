@@ -40,11 +40,12 @@ public class EditSession {
 
     private final SplinterSet editSet;
     private final Route editRoute;
+    private boolean isNew = false;
 
     private BlockPos hoveredPos;
 
 
-    public EditSession(SplinterSet editSet, Route editRoute) {
+    public EditSession(SplinterSet editSet, Route editRoute, boolean isNew) {
         this.editSet = editSet;
         this.editRoute = editRoute;
         this.ogStart = editRoute.getStartTrigger();
@@ -52,6 +53,7 @@ public class EditSession {
         this.pendingStart = ogStart;
         this.pendingEnd = ogEnd;
         this.activeTrigger = pendingStart; // initially edit the start trigger
+        this.isNew = isNew;
     }
 
     public void render(MatrixStack matrixStack, TextRenderer textRenderer) {
@@ -193,6 +195,11 @@ public class EditSession {
         editSet.setRoute(editRoute);
         SplinterClient.ssm.setIdle();
 
+        // add the route if it isn't already in the registry
+        if (isNew) {
+            SplinterClient.routeRegistry.add(editRoute);
+        }
+
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
         if (client.currentScreen instanceof EditScreen) {
@@ -254,7 +261,6 @@ public class EditSession {
         if (activeTrigger == null) return false;
         return activeTrigger.isStart();
     }
-
 
     public Trigger.TriggerType getActiveType() {
         return activeTrigger == null ? Trigger.TriggerType.MAP : activeTrigger.getType();

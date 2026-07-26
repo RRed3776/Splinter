@@ -9,6 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SplinterSet {
+
+    public static final class EditableRoute {
+        private final Route route;
+        private final boolean isNew;
+
+        public EditableRoute(Route route, boolean isNew) {
+            this.route = route;
+            this.isNew = isNew;
+        }
+
+        public static EditableRoute newlyCreated(Route route) {
+            return new EditableRoute(route, true);
+        }
+
+        public static EditableRoute existing(Route route) {
+            return new EditableRoute(route, false);
+        }
+
+        public Route getRoute() { return route; }
+        public boolean isNew() { return isNew; }
+    }
+
     private String name;
     private List<Long> times = new ArrayList<>(); // for now, data will just be non-persistent
     private Route route;
@@ -75,14 +97,15 @@ public class SplinterSet {
         return route;
     }
 
-    public Route getEditableRoute() {
+    public EditableRoute getEditableRoute() {
         if (route.isDefault()) {
             String routeName = name + " Route";
             MapTrigger start = new MapTrigger(Trigger.TriggerSlot.START);
             MapTrigger end = new MapTrigger(Trigger.TriggerSlot.END);
-            return new Route(start, end, routeName);
+            Route newRoute = new Route(start, end, routeName);
+            return EditableRoute.newlyCreated(newRoute);
         }
-        return route;
+        return EditableRoute.existing(route);
     }
 
     public void setRoute(Route route) {
