@@ -1,5 +1,6 @@
 package me.rred.splinter.client.sets.gui;
 
+import me.rred.splinter.Splinter;
 import me.rred.splinter.client.SplinterClient;
 import me.rred.splinter.client.SplinterStateMachine;
 import me.rred.splinter.client.keyboard.KeyInputHandler;
@@ -264,21 +265,14 @@ public class SetsScreen extends Screen {
                     }, SplinterColors.TEXT,
                             SplinterClient.setManager.getDisplayedSetB() != set),
                     new ContextMenu.Option("Route Options", () -> {
-                        // probably a better way to do this, revisit context menu building later
-                        // also should refactor the active parameter and maybe restructure option building
-                        int[] pos = contextMenu.getPos(); // x, y of context menu
-                        routeOptions.open(pos[0] + 80, pos[1] + 37, height, set.getRoute().getName(), List.of(
-                                new ContextMenu.Option("Edit", () -> {
-                                    SplinterClient.ssm.setEdit();
-                                    SetsScreen.toggle();
-                                }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
-                                new ContextMenu.Option("Swap", () -> {
-                                    // do something to swap routes
-                                }, SplinterColors.TEXT, true),
-                                new ContextMenu.Option("Rename", () -> {
-                                    // open rename modal
-                                }, SplinterColors.TEXT, true)
-                        ));
+                        if (!routeOptions.isVisible()) {
+                            // build route options sub-context menu
+                            int[] pos = contextMenu.getPos(); // x, y of context menu
+                            openRouteOptions(set, pos[0] + 80, pos[1] + 37);
+                        } else {
+                            Splinter.LOGGER.info("closing! or am I?");
+                            routeOptions.close();
+                        }
                     }, SplinterColors.TEXT, true),
                     new ContextMenu.Option("Rename", () -> {
                         activeModal = new InputModal("Rename Set", () -> {
@@ -326,6 +320,44 @@ public class SetsScreen extends Screen {
                     }, 0xFF5555, !(sets.size() == 1))
             ));
         }
+    }
+
+    private void openRouteOptions(SplinterSet set, int x, int y) {
+        Route route = set.getRoute();
+        routeOptions.open(x, y, height, set.getRoute().getName(), List.of(
+                new ContextMenu.Option("Edit", () -> {
+                    SplinterClient.ssm.setEdit();
+                    SetsScreen.toggle();
+                }, SplinterColors.TEXT, SplinterClient.ssm.getState() != SplinterStateMachine.State.EDIT),
+                new ContextMenu.Option("Swap", () -> {
+                    // do something to swap routes
+                    SetsScreen.toggle();
+                    RoutesScreen.toggle();
+                }, SplinterColors.TEXT, true),
+                new ContextMenu.Option("Rename", () -> {
+                    activeModal = new InputModal("Rename Route", () -> {
+                        if(activeModal instanceof InputModal im) {
+                            String name = im.getTextInput();
+                            List<Route> routes = SplinterClient.routeRegistry.getAllRoutes();
+
+                            if (name == null || name.isEmpty()) {
+                                im.setPopUp(false);
+                            }
+                            else if (routes.contains(new Route(name))) {
+                                im.setPopUp(true);
+                            } else {
+                                route.setName(name);
+                                activeModal.closeGuard = false;
+                                activeModal = null;
+                                init();
+                            }
+                        }
+                    });
+                    String routeName = route.getName();
+                    activeModal.setSubmessage(routeName);
+                    activeModal.openModal(width, height);
+                }, SplinterColors.TEXT, !route.isDefault())
+        ));
     }
 
     @Override
@@ -456,9 +488,9 @@ public class SetsScreen extends Screen {
 
         if (screenMenu.handleClick(mouseX, mouseY)) return true;
 
-        // context menu gets priority over setlist but not route options
-        if (routeOptions.handleClick()) return true;
         if (contextMenu.handleClick()) return true;
+
+        if (routeOptions.handleClick()) return true;
 
         for (SplinterSmallButton exitButton : exitButtons) {
             if (exitButton != null && exitButton.handleClick(mouseX, mouseY, button)) return true;

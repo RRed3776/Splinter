@@ -55,9 +55,6 @@ public class SplinterStateMachine {
     public void setEdit() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.world == null || client.player == null) return;
-//        if (!StateHud.isHintConsumed()) {
-//            StateHud.setHintConsumed(true);
-//        }
         SplinterClient.timer.clear();
 
         state = State.EDIT;
@@ -68,6 +65,17 @@ public class SplinterStateMachine {
         editSession = new EditSession(set, route, isNew);
         ClientEventEmitter.setCreative();
         // display set UI
+    }
+
+    public void setEdit(Route route) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null || client.player == null) return;
+        SplinterClient.timer.clear();
+
+        state = State.EDIT;
+        SplinterSet set = SplinterClient.setManager.getActiveSet();
+        editSession = new EditSession(set, route, false);
+        ClientEventEmitter.setCreative();
     }
 
     public void refreshEditSession() {

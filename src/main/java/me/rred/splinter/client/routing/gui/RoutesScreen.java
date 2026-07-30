@@ -32,10 +32,13 @@ public class RoutesScreen extends Screen {
     private RoutesListPanel routesListPanel;
     private SplinterModal activeModal;
     private SplinterButton renameButton;
+    private SplinterButton editButton;
 
     private List<Route> routes = new ArrayList<>();
     private Route selectedRoute = null;
     private SplinterSet set = null;
+    private Route currentRoute;
+    private boolean swapMode;
 
     public RoutesScreen() {
         super(new LiteralText("Routes Menu"));
@@ -121,6 +124,15 @@ public class RoutesScreen extends Screen {
                     activeModal.openModal(width, height);
                 }
         ));
+
+        int editY = renameY - buttonHeight - 5;
+        addButton(editButton = new SplinterButton(buttonsX, editY, buttonWidth, buttonHeight,
+                new LiteralText("EDIT"),
+                () -> {
+                    SplinterClient.ssm.setEdit(selectedRoute);
+                    RoutesScreen.toggle();
+                }
+        ));
     }
 
     @Override
@@ -164,7 +176,6 @@ public class RoutesScreen extends Screen {
         int routeInfoY = listTop + 5;
         textRenderer.drawWithShadow(matrixStack, "Nothing to see here!", headerX2, routeInfoY, textColor);
 
-
         // sets list
         double scale = client.getWindow().getScaleFactor();
         int scissorWidth = screenRight - screenLeft;
@@ -179,6 +190,15 @@ public class RoutesScreen extends Screen {
         }
 
         renameButton.active = selectedRoute != null;
+        editButton.active = selectedRoute != null;
+
+        if (selectedRoute != null && !selectedRoute.isDefault()) {
+            renameButton.active = true;
+            editButton.active = true;
+        } else {
+            renameButton.active = false;
+            editButton.active = false;
+        }
 
         super.render(matrixStack, mouseX, mouseY, delta);
     }
@@ -230,10 +250,6 @@ public class RoutesScreen extends Screen {
         return super.charTyped(chr, keyCode);
     }
 
-    public void selectSet(SplinterSet set) {
-        this.set = set;
-    }
-
     public static void toggle() {
         MinecraftClient client = MinecraftClient.getInstance();
         assert(client != null);
@@ -243,9 +259,5 @@ public class RoutesScreen extends Screen {
         else {
             client.openScreen(new RoutesScreen());
         }
-    }
-
-    public void renameRoute(String name) {
-        selectedRoute.setName(name);
     }
  }
