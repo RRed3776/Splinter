@@ -12,6 +12,12 @@ Fabric API 0.18.0 build 387: https://modrinth.com/mod/fabric-api/versions?g=1.16
 - Stats panel showing best, average, and standard deviation
 - Edit mode for configuring route triggers in-world
 
+## Technical Overview:
+- Client-server networking layer using Fabric's packet registries for real-time barter tracking (referenced from Laysar)
+- Mixin-based injection into Minecraft internals (PiglinBrainMixin) to hook into game logic
+- Finite state machine (SplinterStateMachine) with a non-destructive edit-mode architecture for live route reconfiguration
+- CSV export pipeline for statistical route analysis (t-tests, confidence intervals) in R
+
 ## Default Keybinds
 - **Edit Select** - M
 - **Open Edit GUI** - N
